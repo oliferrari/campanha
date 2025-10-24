@@ -115,7 +115,7 @@
     </div>
 
     <script>
-        // Dados dos animais (com status booleano e links de imagem)
+        // Dados dos animais (com Whitney atualizada)
         const animals = [
             { nome: "Alice", idade: "2/3 anos", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png" },
             { nome: "Alfredo", idade: "2 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png" },
@@ -150,7 +150,6 @@
             { nome: "Leona", idade: "3 anos", historico: "Resgatada em Belfort Roxo, na beira da estrada, com seus filhotes. Mãe do Juca.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/nbFVcqt.png" },
             { nome: "Lily", idade: "5 anos", historico: "Resgatada grávida em ilha de Guaratiba, em Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/pMxCTBC.png" },
             { nome: "Liz", idade: "3 anos", historico: "Resgatada em Paciência atropelada. Recuperou os movimentos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Sa4Z85g.png" },
-            { nome: "Maisena", idade: "4 anos", historico: "Resgatado no mercado de Guaratiba final de 2023.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/DXBAPKk.png" },
             { nome: "Manu", idade: "3 anos", historico: "Resgatada com seus filhotes Leticia, Cecilia e Pirata, nas ruas. Seus filhotes foram adotados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/I0VXyr9.png" },
             { nome: "Marcelo", idade: "2 anos", historico: "Resgatado atropelado em Ilha de Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ff6Wi1x.png" },
             { nome: "Marvilla", idade: "N/A", historico: "Resgatada em Ilha de Guaratiba com seu filhote Vitinho. Estava no cio com machos a perseguindo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/8g7Gfbp.png" },
@@ -167,14 +166,13 @@
             { nome: "Ramona", idade: "N/A", historico: "Mãe do Feliz, resgatada com seus filhotes recém nascidos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/txUppNv.png" },
             { nome: "Ravena", idade: "4 anos", historico: "N/A", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/X3ghXQT.png" },
             { nome: "Roberta", idade: "3 anos", historico: "Resgatada em Seropédica junto com Isadora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/n1DKHkS.png" },
-            { nome: "Scooby", idade: "N/A", historico: "Abandonado na porta de um condomínio em Jacarepaguá.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/0hM9DZ2.png" },
             { nome: "Scott", idade: "5 anos", historico: "abandonado pelas ruas de Maricá , resgatado pela ong Hope que nos pediu ajuda", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Q746sQ1.png" },
             { nome: "Sonho", idade: "5 anos", historico: "Resgatado muito machucado no Uptown.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/kiCzetx.png" },
             { nome: "Teodora", idade: "5 anos", historico: "Resgatada em Deodoro, no cio, com muitos cachorros em cima dela e ela fugindo deles e chorando.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lYoa67V.png" },
             { nome: "Tigrinho", idade: "1 ano", historico: "Resgatado em hospedagem desconhecida em 11/24 com suas mães e irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/niEPyqz.png" },
             { nome: "Tita", idade: "6/7 anos", historico: "Vitima de maus tratos, resgatada pela Prefeitura, foi tirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1JiJ72j.png" },
             { nome: "Vitinho", idade: "5/6 meses", historico: "filho da Marvilla, resgatado em Illha de Guaratiba.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/YFhHa33.png" },
-            { nome: "Whitney", idade: "N/A", historico: "N/A", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/tMJrZfR.png" },
+            { nome: "Whitney", idade: "6 meses", historico: "Abandonada em 12/06 na rua do abrigo dos indefesos debaixo de temporal com os irmãos Elton e Hazel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/tMJrZfR.png" },
             { nome: "Xanadu", idade: "6 anos", historico: "Resgatada nas paineiras com outros 2 cães", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Lhd95IL.png" }
         ];
 
@@ -210,7 +208,7 @@
 
         // --- Funções de Navegação e Modal ---
 
-        // NOVA: Função separada para ATUALIZAR o conteúdo do modal
+        // Função separada para ATUALIZAR o conteúdo do modal
         function updateModalContent(index) {
             if (index < 0 || index >= animals.length) {
                 console.error("Índice de animal inválido:", index);
@@ -232,21 +230,21 @@
             modalCastrado.checked = animal.castrado;
         }
 
-        // MODIFICADA: Agora chama a função de atualização e mostra o modal
+        // Chama a função de atualização e mostra o modal
         function openModal(index) {
             updateModalContent(index); // Atualiza o conteúdo para o índice clicado
             modal.classList.remove('hidden');
             modal.classList.add('visible');
         }
 
-        // MODIFICADA: Reseta o índice ao fechar
+        // Reseta o índice ao fechar
         function closeModal() {
             modal.classList.add('hidden');
             modal.classList.remove('visible');
             currentAnimalIndex = -1; // Reseta o índice
         }
 
-        // NOVA: Função para mostrar o próximo animal
+        // Função para mostrar o próximo animal
         function showNextAnimal() {
             let nextIndex = currentAnimalIndex + 1;
             if (nextIndex >= animals.length) {
@@ -255,7 +253,7 @@
             updateModalContent(nextIndex);
         }
 
-        // NOVA: Função para mostrar o animal anterior
+        // Função para mostrar o animal anterior
         function showPreviousAnimal() {
             let prevIndex = currentAnimalIndex - 1;
             if (prevIndex < 0) {
@@ -268,7 +266,7 @@
 
         // --- Configuração Inicial e Event Listeners ---
 
-        // Popula a galeria (MODIFICADO para passar o índice)
+        // Popula a galeria (passando o índice)
         animals.forEach((animal, index) => {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105';
@@ -283,7 +281,7 @@
                 </div>
             `;
             
-            // MODIFICADO: Passa o 'index' em vez do objeto 'animal'
+            // Passa o 'index' em vez do objeto 'animal'
             card.addEventListener('click', () => openModal(index));
             
             gallery.appendChild(card);
@@ -297,7 +295,7 @@
             }
         });
 
-        // --- NOVOS Listeners para Navegação ---
+        // --- Listeners para Navegação ---
 
         // 1. Navegação por Teclado
         document.addEventListener('keydown', (e) => {
