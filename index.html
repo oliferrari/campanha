@@ -116,7 +116,6 @@
 
     <script>
         // Dados dos animais (com status booleano e links de imagem)
-        // Esta lista é 100% baseada na última atualização do usuário
         const animals = [
             { nome: "Alice", idade: "N/A", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png" },
             { nome: "Alfredo", idade: "N/A", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png" },
@@ -125,7 +124,8 @@
             { nome: "Angelo", idade: "4 anos", historico: "Resgatado da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/VQ8JWHF.png" },
             { nome: "Ariel", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentro de um galinheiro.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/udjUsIK.png" },
             { nome: "Athos", idade: "N/A", historico: "Athos resgatado junto com a Kiara amarrado em um portão de uma casa em seropedica 11/06", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ygKFF2W.png" },
-            { nome: "Batman", idade: "5 meses", historico: "Resgatado mujito filhote com seus irmãos, em São Gonçalo.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/jUTi9tw.png" },
+            // BATMAN: Informações revertidas conforme solicitado
+            { nome: "Batman", idade: "6 meses", historico: "Resgatado muito filhote com seus irmãos, em São Gonçalo. Único filhote restante da ninhada.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/jUTi9tw.png" },
             { nome: "Beethoven", idade: "6 anos", historico: "Resgatado em Santa Cruz com diversos tumores.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/yn5liYO.png" },
             { nome: "Benji", idade: "1 ano", historico: "Resgatado da Fazenda Modelo, apreendido vitimas de maus tratos pelo Nas Garras da Lei.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lD6xOKX.png" },
             { nome: "Beth", idade: "N/A", historico: "Resgatada vitima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/cjiYcTv.png" },
@@ -147,6 +147,7 @@
             { nome: "Fênix", idade: "N/A", historico: "Resgatado baleado após uma operação na cidade de Deus", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/rmbtu0g.png" },
             { nome: "Isadora", idade: "N/A", historico: "Resgatada em Seropédica, vivia nas ruas.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MAsffdQ.png" },
             { nome: "Juca", idade: "11 meses", historico: "resgatado filhote com mãe e irmãos em Belfort roxo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l8jntRH.png" },
+            // LARA: História já estava correta (não mudou com a planilha).
             { nome: "Lara", idade: "N/A", historico: "Abandonada numa laje do Irajá, Lara deu a luz sozinha a seus filhotes. Sem comida ou água, lutou pela sua vida e infelizmente, somente ela e sua filhote, Lorena, sobreviveram.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/i9HRWU7.png" },
             { nome: "Leona", idade: "3 anos", historico: "Resgatada em Belfort Roxo, na beira da estrada, com seus filhotes. Mãe do Juca.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/nbFVcqt.png" },
             { nome: "Lily", idade: "N/A", historico: "Resgatada grávida em ilha de Guaratiba, em Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/pMxCTBC.png" },
@@ -187,10 +188,15 @@
         const modalImg = document.getElementById('modal-img');
         const modalName = document.getElementById('modal-name');
         const modalAge = document.getElementById('modal-age');
-        // Novos elementos de checkbox
         const modalVacinado = document.getElementById('modal-vacinado');
         const modalCastrado = document.getElementById('modal-castrado');
         const modalHistory = document.getElementById('modal-history');
+
+        // --- Variáveis para Navegação ---
+        let currentAnimalIndex = -1;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        // ---------------------------------
 
         // Função para converter RGB para HEX (para URLs de placeholder)
         function rgbToHex(r, g, b) {
@@ -204,45 +210,72 @@
         const placeholderBgColor = rgbToHex(158, 117, 89); // Marrom médio
         const placeholderTextColor = rgbToHex(244, 243, 239); // Branco acinzentado
 
-        // Função para abrir o modal com os dados do animal
-        function openModal(animal) {
-            // Cria a URL do placeholder para o modal com 500x500
-            const placeholderUrlModal = `https://placehold.co/500x500/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
+        // --- Funções de Navegação e Modal ---
+
+        // NOVA: Função separada para ATUALIZAR o conteúdo do modal
+        function updateModalContent(index) {
+            if (index < 0 || index >= animals.length) {
+                console.error("Índice de animal inválido:", index);
+                return;
+            }
             
-            // Define a imagem final: usa a imagem real se existir, senão usa o placeholder
+            currentAnimalIndex = index; // Atualiza o índice global
+            const animal = animals[index];
+
+            const placeholderUrlModal = `https://placehold.co/500x500/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
             const finalImageUrlModal = animal.imageUrl ? animal.imageUrl : placeholderUrlModal;
             
             modalImg.src = finalImageUrlModal;
             modalImg.alt = `Foto de ${animal.nome}`;
             modalName.textContent = animal.nome;
-            
-            // Verifica se a informação é "N/A" ou nula antes de exibir
             modalAge.textContent = (animal.idade && animal.idade !== "N/A") ? animal.idade : 'Não informada';
             modalHistory.textContent = (animal.historico && animal.historico !== "N/A") ? animal.historico : 'Nenhum histórico disponível.';
-            
-            // Define o estado dos checkboxes
             modalVacinado.checked = animal.vacinado;
             modalCastrado.checked = animal.castrado;
+        }
 
+        // MODIFICADA: Agora chama a função de atualização e mostra o modal
+        function openModal(index) {
+            updateModalContent(index); // Atualiza o conteúdo para o índice clicado
             modal.classList.remove('hidden');
             modal.classList.add('visible');
         }
 
-        // Função para fechar o modal
+        // MODIFICADA: Reseta o índice ao fechar
         function closeModal() {
             modal.classList.add('hidden');
             modal.classList.remove('visible');
+            currentAnimalIndex = -1; // Reseta o índice
         }
 
-        // Popula a galeria com os animais
-        animals.forEach(animal => {
+        // NOVA: Função para mostrar o próximo animal
+        function showNextAnimal() {
+            let nextIndex = currentAnimalIndex + 1;
+            if (nextIndex >= animals.length) {
+                nextIndex = 0; // Volta ao início
+            }
+            updateModalContent(nextIndex);
+        }
+
+        // NOVA: Função para mostrar o animal anterior
+        function showPreviousAnimal() {
+            let prevIndex = currentAnimalIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = animals.length - 1; // Vai para o fim
+            }
+            updateModalContent(prevIndex);
+        }
+
+
+
+        // --- Configuração Inicial e Event Listeners ---
+
+        // Popula a galeria (MODIFICADO para passar o índice)
+        animals.forEach((animal, index) => {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105';
             
-            // Cria a imagem placeholder (para o card) com a proporção existente
             const placeholderUrlCard = `https://placehold.co/300x200/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
-            
-            // Define a imagem final: usa a imagem real se existir, senão usa o placeholder
             const finalImageUrlCard = animal.imageUrl ? animal.imageUrl : placeholderUrlCard;
             
             card.innerHTML = `
@@ -252,22 +285,63 @@
                 </div>
             `;
             
-            // Adiciona o evento de clique no card
-            card.addEventListener('click', () => openModal(animal));
+            // MODIFICADO: Passa o 'index' em vez do objeto 'animal'
+            card.addEventListener('click', () => openModal(index));
             
             gallery.appendChild(card);
         });
 
-        // Adiciona eventos para fechar o modal
+        // Listeners para fechar o modal
         closeModalBtn.addEventListener('click', closeModal);
-        // Fecha o modal ao clicar fora da caixa de conteúdo
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 closeModal();
             }
         });
 
+        // --- NOVOS Listeners para Navegação ---
+
+        // 1. Navegação por Teclado
+        document.addEventListener('keydown', (e) => {
+            // Só funciona se o modal estiver visível
+            if (modal.classList.contains('visible')) {
+                if (e.key === 'ArrowRight') {
+                    showNextAnimal();
+                } else if (e.key === 'ArrowLeft') {
+                    showPreviousAnimal();
+                }
+            }
+        });
+
+        // 2. Navegação por Swipe (Touch)
+        modal.addEventListener('touchstart', (e) => {
+            // Guarda a posição inicial do primeiro toque
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        modal.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const swipeThreshold = 50; // Mínimo de 50px para contar como swipe
+
+            // Verifica se foi um swipe mais horizontal do que vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+                if (deltaX > 0) {
+                    // Arrastou para a Direita
+                    showPreviousAnimal();
+                } else {
+                    // Arrastou para a Esquerda
+                    showNextAnimal();
+                }
+            }
+        }, { passive: true });
+
     </script>
 </body>
 </html>
+
 
