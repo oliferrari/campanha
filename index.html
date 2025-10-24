@@ -340,26 +340,22 @@
         setLogLevel('error'); 
         
         // Variável que irá conter as credenciais. Será preenchida pelo Canvas OU pelo deploy externo.
-        let externalFirebaseConfig = null;
+        let configToUse = null;
 
         // 1. Tenta carregar as credenciais do ambiente Canvas
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
             try {
-                externalFirebaseConfig = JSON.parse(__firebase_config);
+                configToUse = JSON.parse(__firebase_config);
             } catch (e) {
                 console.error("Erro ao parsear __firebase_config (Canvas):", e);
             }
         }
         
         // 2. Tenta carregar as credenciais do bloco de deploy externo (manual)
-        else {
-            // ** [PASSO 3: CONFIGURAÇÃO DO FIREBASE] **
-            // SE VOCÊ NÃO TEM O __firebase_config DEFINIDO, COLE SEU OBJETO firebaseConfig AQUI.
-            // VOCÊ ENCONTRA ESTE OBJETO APÓS CRIAR O PROJETO FIREBASE.
-            // >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
-            
-            // ATENÇÃO: SUBSTITUA ESTE OBJETO { ... } PELO SEU OBJETO firebaseConfig COPIADO DO CONSOLE.
-            const firebaseConfig = {
+        // >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
+        // SUBSTITUA ESTE OBJETO { ... } PELO SEU OBJETO firebaseConfig COMPLETO QUE VOCÊ COPIOU.
+        // Se você não quiser expor suas chaves aqui, use `const externalFirebaseConfig = null;`
+        const externalFirebaseConfig = {
               apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", 
               authDomain: "campanha-d6eed8.firebaseapp.com",
               projectId: "campanha-d6eed8",
@@ -368,7 +364,10 @@
               appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6",
               measurementId: "G-WDVE5TJV5P"
             };
-            externalFirebaseConfig = firebaseConfig; // Define a variável de configuração global
+        
+        // Prioriza as credenciais do Canvas (se existirem), senão usa as credenciais externas coladas.
+        if (!configToUse && externalFirebaseConfig && externalFirebaseConfig.projectId) {
+            configToUse = externalFirebaseConfig; 
         }
         
         // Instâncias Globais do Firebase
@@ -376,9 +375,9 @@
         let db = null;
         let auth = null;
 
-        // NOVO: Inicialização única e garantida
-        if (externalFirebaseConfig && externalFirebaseConfig.projectId && externalFirebaseConfig.apiKey) {
-            app = initializeApp(externalFirebaseConfig);
+        // Inicialização única e garantida
+        if (configToUse && configToUse.projectId && configToUse.apiKey) {
+            app = initializeApp(configToUse);
             db = getFirestore(app);
             auth = getAuth(app); // Inicializa autenticação
         } else {
