@@ -345,8 +345,23 @@
                 firebaseConfig = JSON.parse(__firebase_config);
             } catch (e) {
                 console.error("Erro ao parsear __firebase_config:", e);
-                // Permite que o app continue com firebaseConfig = null
             }
+        }
+        else {
+            // >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
+            // ESTE BLOCO DEVE SER PREENCHIDO COM AS CREDENCIAIS DO SEU PROJETO FIREBASE
+            // (Passo 4 da seção "Adicionar um Aplicativo Web" no Console do Firebase)
+            
+            // ATENÇÃO: SUBSTITUA OS PLACEHOLDERS PELOS SEUS VALORES REAIS!
+           const firebaseConfig = {
+              apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", // Seu valor
+              authDomain: "campanha-d6eed8.firebaseapp.com",     // Seu valor
+              projectId: "campanha-d6eed8",                      // Seu valor
+              storageBucket: "campanha-d6eed8.appspot.com",
+              messagingSenderId: "678872708483",
+              appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6", // Seu valor
+              measurementId: "G-WDVE5TJV5P"
+            };
         }
         
         let app = null;
@@ -444,6 +459,27 @@
             const gender = (sexo || '').toUpperCase();
             // Retorna o símbolo Unicode correspondente, ou string vazia
             return gender === 'F' ? '♀' : (gender === 'M' ? '♂' : '');
+        }
+
+        // NOVO: Função para verificar se é filhote com limite de 7 meses
+        function isPuppy(animal) {
+            const idadeStr = (animal.idade || '').toLowerCase();
+            
+            // 1. Deve conter "mes" ou "meses"
+            if (!idadeStr.includes('mes')) {
+                return false;
+            }
+            
+            // 2. Tenta extrair o número
+            const match = idadeStr.match(/(\d+)/);
+            if (match && match[1]) {
+                const meses = parseInt(match[1], 10);
+                // 3. Verifica a regra: menor ou igual a 7 meses
+                return meses <= 7;
+            }
+            
+            // Se for "meses" mas não conseguir extrair o número (ex: "poucos meses"), trata como adulto por segurança, ou pode-se mudar para true se for preferível.
+            return false;
         }
 
         // Função de scroll para as seções
@@ -555,7 +591,7 @@
             
             animals.forEach((animal) => { 
                 // CORREÇÃO: Usar o ID do animal para garantir a abertura correta do modal.
-                // O ID será usado no evento de clique, mas o `originalIndex` é o índice na lista `localAnimals`
+                // O ID é o identificador único, seja ele do Firebase ou local.
                 const originalIndex = localAnimals.findIndex(a => a.id === animal.id); 
                 if (originalIndex === -1) return; 
 
@@ -590,12 +626,9 @@
             // FILTRAR animais visíveis
             const visibleAnimals = localAnimals.filter(animal => animal.visivel !== false);
 
-            // CATEGORIZAÇÃO: Filhotes (idade contém 'mes' ou 'meses') vs Adultos (o resto)
-            const filhotes = visibleAnimals.filter(animal => 
-                (animal.idade || '').toLowerCase().includes('mes'));
-
-            const adultos = visibleAnimals.filter(animal => 
-                !(animal.idade || '').toLowerCase().includes('mes'));
+            // CATEGORIZAÇÃO: Filhotes (<= 7 meses) vs Adultos (o resto)
+            const filhotes = visibleAnimals.filter(isPuppy); // Usa a nova função isPuppy
+            const adultos = visibleAnimals.filter(animal => !isPuppy(animal)); // O restante são adultos
 
             // Ordena os dois grupos por nome
             const sortedFilhotes = [...filhotes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
@@ -621,8 +654,8 @@
                 const filhotesTitle = document.createElement('h2');
                 filhotesTitle.id = 'filhotes-section'; // ID para âncora de scroll
                 filhotesTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
-                // APLICA O ÍCONE NO TÍTULO, SEM A FRASE EXTRA
-                filhotesTitle.innerHTML = '<i class="fas fa-paw mr-3"></i> Filhotes (Até 1 ano)';
+                // TÍTULO ATUALIZADO
+                filhotesTitle.innerHTML = '<i class="fas fa-paw mr-3"></i> Filhotes (Até 7 meses)';
                 gallery.appendChild(filhotesTitle);
                 gallery.appendChild(createAnimalCardContainer(sortedFilhotes));
             }
@@ -632,8 +665,8 @@
                 const adultosTitle = document.createElement('h2');
                 adultosTitle.id = 'adultos-section'; // ID para âncora de scroll
                 adultosTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
-                // APLICA O ÍCONE NO TÍTULO, SEM A FRASE EXTRA
-                adultosTitle.innerHTML = '<i class="fas fa-dog mr-3"></i> Adultos (Mais de 1 ano)';
+                // TÍTULO ATUALIZADO
+                adultosTitle.innerHTML = '<i class="fas fa-dog mr-3"></i> Adultos (Mais de 7 meses)';
                 gallery.appendChild(adultosTitle);
                 gallery.appendChild(createAnimalCardContainer(sortedAdultos));
             }
@@ -1019,7 +1052,11 @@
         async function initializeAppWithAuth() { 
             if (!auth) { 
                 // Se o Firebase Auth não foi inicializado (sem config), usa dados locais e exibe a galeria.
-                localAnimals = initialAnimalData;
+                // CORREÇÃO: Atribuir IDs temporários aos dados locais para que a lógica de lookup funcione
+                localAnimals = initialAnimalData.map((animal, index) => ({
+                    ...animal,
+                    id: `local_id_${index}` 
+                }));
                 mainContainer.classList.remove('view-hidden');
                 renderGallery();
                 console.warn("Sem Firebase. Usando dados iniciais locais.");
@@ -1133,7 +1170,11 @@
         function handleLogoutState() { 
             userId = null; animalsCollectionRef = null; 
             if (unsubscribe) { unsubscribe(); unsubscribe = null; } 
-            localAnimals = []; isAdminView = false; adminView.classList.add('view-hidden'); galleryView.classList.remove('view-hidden'); 
+            localAnimals = initialAnimalData.map((animal, index) => ({
+                ...animal,
+                id: `local_id_${index}` 
+            })); 
+            isAdminView = false; adminView.classList.add('view-hidden'); galleryView.classList.remove('view-hidden'); 
             adminButton.innerHTML = '<i class="fas fa-pencil-alt"></i>'; adminButton.title = "Modo de Edição"; 
             renderGallery(); adminTableBody.innerHTML = ''; 
             console.log("Logout tratado."); 
