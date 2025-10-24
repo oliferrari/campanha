@@ -337,10 +337,32 @@
         
         // --- Configuração Firebase ---
         setLogLevel('error'); 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "...", authDomain: "...", projectId: "...", }; 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        
+        // Define uma config de fallback VAZIA se __firebase_config não estiver definido.
+        let firebaseConfig = null;
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            try {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } catch (e) {
+                console.error("Erro ao parsear __firebase_config:", e);
+                // Permite que o app continue com firebaseConfig = null
+            }
+        }
+        
+        let app = null;
+        let db = null;
+        let auth = null;
+
+        // Se a config do Firebase estiver presente, inicializa.
+        if (firebaseConfig && firebaseConfig.projectId && firebaseConfig.apiKey) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } else {
+             // Caso não haja config, o app rodará sem Firebase, mas o código precisa ser resiliente
+            console.warn("Configuração do Firebase ausente ou inválida. O aplicativo não terá persistência de dados.");
+        }
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; 
 
         let userId = null; 
@@ -812,6 +834,7 @@
         // --- Funções CRUD Firestore ---
 
         async function saveAllChanges() {
+            if (!db) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Recarregue a página em um ambiente com Firebase ativo.", "Erro de Conexão"); return; }
             if (isSaving || !animalsCollectionRef) { console.warn("Salvamento em progresso/coleção inválida."); return; }
             isSaving = true; saveAllButton.disabled = true; saveAllButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Salvando...';
             console.log("Iniciando save all...");
@@ -876,6 +899,7 @@
         }
 
         async function deleteSelected() {
+            if (!db) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Recarregue a página em um ambiente com Firebase ativo.", "Erro de Conexão"); return; }
             if (isSaving || !animalsCollectionRef) { console.warn("Aguarde save/coleção inválida."); return; }
             const selectedCheckboxes = adminTableBody.querySelectorAll('.row-select:checked:not(:disabled)'); 
             const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('tr').getAttribute('data-id')).filter(id => id); 
@@ -904,6 +928,7 @@
         }
 
         async function clearAllData() { 
+            if (!db) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Recarregue a página em um ambiente com Firebase ativo.", "Erro de Conexão"); return; }
             if (isSaving || !animalsCollectionRef) { console.warn("Aguarde save/coleção inválida."); return; }
             console.log("Iniciando clear all..."); closeConfirmModal(); 
             clearAllButton.disabled = true; clearAllButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Limpando...';
@@ -939,6 +964,7 @@
 
         // --- Funções de Configuração do Evento ---
         async function saveEventConfig() {
+            if (!db) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Recarregue a página em um ambiente com Firebase ativo.", "Erro de Conexão"); return; }
             if (!eventConfigDocRef) { console.error("Ref de config inválida."); openAlertModal("Erro: Configuração de evento não inicializada.", "Erro"); return; }
             
             const local = localInput.value.trim();
@@ -955,6 +981,7 @@
         }
 
         async function loadEventConfig() {
+            if (!db) return; // Não tenta carregar se o Firebase não estiver ativo
              if (!eventConfigDocRef) { console.warn("Ref de config inválida."); return; }
 
              try {
@@ -988,10 +1015,28 @@
 
         // --- Autenticação e Inicialização ---
         async function initializeAppWithAuth() { 
+            if (!auth) { 
+                // Se o Firebase Auth não foi inicializado (sem config), usa dados locais e exibe a galeria.
+                localAnimals = initialAnimalData;
+                mainContainer.classList.remove('view-hidden');
+                renderGallery();
+                console.warn("Sem Firebase. Usando dados iniciais locais.");
+                return;
+            }
+
             try {
                 let userCredential;
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { userCredential = await signInWithCustomToken(auth, __initial_auth_token); console.log("Auth token."); } 
-                else { userCredential = await signInAnonymously(auth); console.log("Auth anon."); }
+                // Tenta signInWithCustomToken apenas se a variável estiver definida
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { 
+                    userCredential = await signInWithCustomToken(auth, __initial_auth_token); 
+                    console.log("Auth token."); 
+                } 
+                // Caso contrário, ou se a tentativa acima falhar, usa signInAnonymously
+                if (!userCredential || !userCredential.user) {
+                     userCredential = await signInAnonymously(auth); 
+                     console.log("Auth anon.");
+                }
+
                 if (userCredential && userCredential.user) {
                     userId = userCredential.user.uid; console.log("UserID:", userId);
                     
@@ -1008,7 +1053,12 @@
                     await loadEventConfig(); // Carregar config do evento
                     setupFirestoreListener(); 
                     mainContainer.classList.remove('view-hidden'); 
-                } else { console.error("Falha user auth."); handleLogoutState(); }
+                } else { 
+                    console.error("Falha user auth."); 
+                    handleLogoutState(); // Exibe o alerta de autenticação
+                }
+                
+                // Configura o listener de estado de autenticação (mantido para compatibilidade, mas menos relevante para esta correção)
                 onAuthStateChanged(auth, (user) => { 
                     if (user) { 
                         if (user.uid !== userId) { 
@@ -1023,13 +1073,21 @@
                                 setupFirestoreListener();
                             }); 
                         } 
-                    } else { console.log("User deslogado."); handleLogoutState(); } 
+                    } else { 
+                        console.log("User deslogado."); 
+                        handleLogoutState(); // Exibe o alerta de autenticação
+                    } 
                 });
-            } catch (error) { console.error("Erro auth:", error); handleLogoutState(); }
+            } catch (error) { 
+                console.error("Erro auth (Firebase ativo):", error); 
+                handleLogoutState(); 
+            }
         }
         async function checkAndPopulateFirestore() { 
+            if (!db) return; // Não executa sem Firebase
             if (!animalsCollectionRef) { console.error("Ref inválida populate."); return; }
             try {
+                // Tenta obter os documentos
                 const snapshot = await getDocs(query(animalsCollectionRef)); 
                 if (snapshot.empty) { 
                     console.log("Populando DB..."); 
@@ -1046,6 +1104,7 @@
             } catch (error) { console.error("Erro check/populate:", error); openAlertModal("Erro ao carregar dados iniciais. Verifique o console.", "Erro"); }
         }
         function setupFirestoreListener() { 
+            if (!db) return; // Não executa sem Firebase
             if (!animalsCollectionRef) { console.error("Ref inválida listener."); return; } 
             if (unsubscribe) { console.log("Parando listener."); unsubscribe(); }
             console.log("Iniciando listener:", animalsCollectionRef.path); 
