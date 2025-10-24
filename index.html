@@ -76,8 +76,8 @@
         
         /* Estilo dos Botões de Navegação Fixos (Sticky Nav) */
         .btn-sticky-nav {
-            background-color: var(--brown-medium); /* NOVO: Fundo Marrom Médio */
-            color: var(--bg-light); /* NOVO: Texto Creme/Claro */
+            background-color: var(--brown-medium); /* Fundo Marrom Médio */
+            color: var(--bg-light); /* Texto Creme/Claro */
             @apply shadow-xl border border-brown-dark transition-transform duration-300;
         }
         .btn-sticky-nav:hover {
@@ -274,6 +274,7 @@
         import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Dados Iniciais (FALLBACK)
+        // Nota: O id é atribuído na inicialização para garantir o lookup correto.
         const initialAnimalData = [ 
             { nome: "Alice", idade: "2 anos", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png", visivel: true, sexo: "F" }, 
             { nome: "Alfredo", idade: "2 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png", visivel: true, sexo: "M" }, 
@@ -338,43 +339,50 @@
         // --- Configuração Firebase ---
         setLogLevel('error'); 
         
-        // Define uma config de fallback VAZIA se __firebase_config não estiver definido.
-        let firebaseConfig = null;
+        // Variável que irá conter as credenciais. Será preenchida pelo Canvas OU pelo deploy externo.
+        let externalFirebaseConfig = null;
+
+        // 1. Tenta carregar as credenciais do ambiente Canvas
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
             try {
-                firebaseConfig = JSON.parse(__firebase_config);
+                externalFirebaseConfig = JSON.parse(__firebase_config);
             } catch (e) {
-                console.error("Erro ao parsear __firebase_config:", e);
+                console.error("Erro ao parsear __firebase_config (Canvas):", e);
             }
         }
+        
+        // 2. Tenta carregar as credenciais do bloco de deploy externo (manual)
         else {
+            // ** [PASSO 3: CONFIGURAÇÃO DO FIREBASE] **
+            // SE VOCÊ NÃO TEM O __firebase_config DEFINIDO, COLE SEU OBJETO firebaseConfig AQUI.
+            // VOCÊ ENCONTRA ESTE OBJETO APÓS CRIAR O PROJETO FIREBASE.
             // >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
-            // ESTE BLOCO DEVE SER PREENCHIDO COM AS CREDENCIAIS DO SEU PROJETO FIREBASE
-            // (Passo 4 da seção "Adicionar um Aplicativo Web" no Console do Firebase)
             
-            // ATENÇÃO: SUBSTITUA OS PLACEHOLDERS PELOS SEUS VALORES REAIS!
-           const firebaseConfig = {
-              apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", // Seu valor
-              authDomain: "campanha-d6eed8.firebaseapp.com",     // Seu valor
-              projectId: "campanha-d6eed8",                      // Seu valor
+            // ATENÇÃO: SUBSTITUA ESTE OBJETO { ... } PELO SEU OBJETO firebaseConfig COPIADO DO CONSOLE.
+            const firebaseConfig = {
+              apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", 
+              authDomain: "campanha-d6eed8.firebaseapp.com",
+              projectId: "campanha-d6eed8",
               storageBucket: "campanha-d6eed8.appspot.com",
               messagingSenderId: "678872708483",
-              appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6", // Seu valor
+              appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6",
               measurementId: "G-WDVE5TJV5P"
             };
+            externalFirebaseConfig = firebaseConfig; // Define a variável de configuração global
         }
         
+        // Instâncias Globais do Firebase
         let app = null;
         let db = null;
         let auth = null;
 
-        // Se a config do Firebase estiver presente, inicializa.
-        if (firebaseConfig && firebaseConfig.projectId && firebaseConfig.apiKey) {
-            app = initializeApp(firebaseConfig);
+        // NOVO: Inicialização única e garantida
+        if (externalFirebaseConfig && externalFirebaseConfig.projectId && externalFirebaseConfig.apiKey) {
+            app = initializeApp(externalFirebaseConfig);
             db = getFirestore(app);
-            auth = getAuth(app);
+            auth = getAuth(app); // Inicializa autenticação
         } else {
-             // Caso não haja config, o app rodará sem Firebase, mas o código precisa ser resiliente
+             // Caso não haja config válida, o app rodará sem Firebase.
             console.warn("Configuração do Firebase ausente ou inválida. O aplicativo não terá persistência de dados.");
         }
 
@@ -478,7 +486,7 @@
                 return meses <= 7;
             }
             
-            // Se for "meses" mas não conseguir extrair o número (ex: "poucos meses"), trata como adulto por segurança, ou pode-se mudar para true se for preferível.
+            // Se for "meses" mas não conseguir extrair o número (ex: "poucos meses"), retorna false
             return false;
         }
 
@@ -591,7 +599,6 @@
             
             animals.forEach((animal) => { 
                 // CORREÇÃO: Usar o ID do animal para garantir a abertura correta do modal.
-                // O ID é o identificador único, seja ele do Firebase ou local.
                 const originalIndex = localAnimals.findIndex(a => a.id === animal.id); 
                 if (originalIndex === -1) return; 
 
@@ -627,7 +634,7 @@
             const visibleAnimals = localAnimals.filter(animal => animal.visivel !== false);
 
             // CATEGORIZAÇÃO: Filhotes (<= 7 meses) vs Adultos (o resto)
-            const filhotes = visibleAnimals.filter(isPuppy); // Usa a nova função isPuppy
+            const filhotes = visibleAnimals.filter(isPuppy); // Usa a função isPuppy (<= 7 meses)
             const adultos = visibleAnimals.filter(animal => !isPuppy(animal)); // O restante são adultos
 
             // Ordena os dois grupos por nome
@@ -898,7 +905,8 @@
 
                 try {
                     if (isNew) {
-                        const newDocRef = doc(collection(db, animalsCollectionRef.path)); 
+                        // CORREÇÃO: Usar doc(animalsCollectionRef)
+                        const newDocRef = doc(animalsCollectionRef); 
                         batch.set(newDocRef, data); console.log("Batch Add:", data.nome);
                         operationsCount++;
                     } else {
@@ -913,7 +921,8 @@
                             originalAnimal.castrado !== data.castrado || 
                             originalAnimal.imageUrl !== data.imageUrl
                         )) {
-                            const docRef = doc(db, animalsCollectionRef.path, docId); 
+                            // CORREÇÃO: Usar doc(animalsCollectionRef, docId)
+                            const docRef = doc(animalsCollectionRef, docId); 
                             batch.update(docRef, data); console.log("Batch Update:", data.nome, docId);
                             operationsCount++; 
                         } else {
@@ -929,7 +938,11 @@
             try {
                 await batch.commit(); console.log(`${operationsCount} alterações salvas.`);
                 saveAllButton.innerHTML = '<i class="fas fa-check mr-1"></i> Salvo!'; setTimeout(() => { saveAllButton.innerHTML = '<i class="fas fa-save mr-1"></i> Salvar Alterações'; }, 2000);
-            } catch (error) { console.error("Erro commit:", error); saveAllButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Erro';
+            } catch (error) { 
+                console.error("Erro commit:", error); 
+                // Exibe alerta mais detalhado
+                openAlertModal(`Erro ao salvar: ${error.message}. Verifique as permissões de escrita no Firestore.`, "Erro de Salvamento");
+                saveAllButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Erro';
             } finally { isSaving = false; saveAllButton.disabled = false; }
         }
 
@@ -949,11 +962,14 @@
                     deleteSelectedButton.disabled = true; deleteSelectedButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Deletando...';
                     try {
                         const batch = writeBatch(db);
-                        idsToDelete.forEach(id => batch.delete(doc(db, animalsCollectionRef.path, id)));
+                        // CORREÇÃO: Usar doc(animalsCollectionRef, id)
+                        idsToDelete.forEach(id => batch.delete(doc(animalsCollectionRef, id)));
                         await batch.commit();
                         console.log(`${idsToDelete.length} deletados.`);
                         openAlertModal(`${idsToDelete.length} animais deletados com sucesso.`, "Sucesso");
-                    } catch (error) { console.error("Erro ao deletar:", error); openAlertModal("Erro ao deletar os animais. Verifique o console.", "Erro");
+                    } catch (error) { 
+                        console.error("Erro ao deletar:", error); 
+                        openAlertModal(`Erro ao deletar: ${error.message}. Verifique as permissões de escrita.`, "Erro");
                     } finally {
                         deleteSelectedButton.disabled = false; deleteSelectedButton.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Deletar Selecionados';
                         selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false;
@@ -973,7 +989,9 @@
                 const batch = writeBatch(db); snapshot.docs.forEach(d => batch.delete(d.ref));
                 await batch.commit(); console.log(`${snapshot.size} deletados.`);
                 openAlertModal(`${snapshot.size} animais removidos.`, "Sucesso");
-            } catch (error) { console.error("Erro clear all:", error); openAlertModal("Erro ao limpar todos os dados. Verifique o console.", "Erro");
+            } catch (error) { 
+                console.error("Erro clear all:", error); 
+                openAlertModal(`Erro ao limpar dados: ${error.message}. Verifique as permissões de escrita.`, "Erro");
             } finally {
                 clearAllButton.disabled = false; 
                 // Aplicar a classe correta após a operação
@@ -1011,7 +1029,7 @@
                 openAlertModal("Local e data do evento salvos com sucesso!", "Sucesso");
             } catch (error) {
                 console.error("Erro ao salvar config do evento:", error);
-                openAlertModal("Erro ao salvar a configuração do evento. Verifique o console.", "Erro");
+                openAlertModal(`Erro ao salvar a configuração do evento: ${error.message}`, "Erro");
             }
         }
 
@@ -1132,7 +1150,7 @@
                     console.log("Populando DB..."); 
                     const batch = writeBatch(db); 
                     initialAnimalData.forEach(d => { 
-                        const nR = doc(collection(db, animalsCollectionRef.path)); 
+                        const nR = doc(animalsCollectionRef); 
                         batch.set(nR, d); 
                     }); 
                     await batch.commit(); 
