@@ -10,348 +10,175 @@
     
     <!-- Fonte Inter do Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    
-    <!-- Ícones -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        /* Estilos Globais e Cores */
-        body { font-family: 'Inter', sans-serif; background-color: rgb(244, 243, 239); }
-        :root {
-            --bg-light: rgb(244, 243, 239); --brown-medium: rgb(158, 117, 89);
-            --brown-dark: rgb(102, 54, 40); --red-accent: rgb(233, 53, 54);
+        /* Define a fonte Inter como padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Cor de fundo principal: R=244 G=243 B=239 */
+            background-color: rgb(244, 243, 239);
         }
+        /* Efeito de fade-in para o modal */
+        #modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* Cores customizadas usando as variáveis CSS para mais fácil manutenção */
+        :root {
+            --bg-light: rgb(244, 243, 239); /* R=244 G=243 B=239 */
+            --brown-medium: rgb(158, 117, 89); /* R=158 G=117 B=89 */
+            --brown-dark: rgb(102, 54, 40); /* R=102 G=54 B=40 */
+            --red-accent: rgb(233, 53, 54); /* R=233 G=53 B=54 */
+        }
+
         .text-brown-dark { color: var(--brown-dark); }
         .text-brown-medium { color: var(--brown-medium); }
-        .bg-brown-medium-light { background-color: rgba(158, 117, 89, 0.2); }
-        .text-white-force { color: white !important; }
+        .bg-brown-medium-light { background-color: rgba(158, 117, 89, 0.2); } /* Um tone mais claro do marrom médio para placeholders */
+        .text-white-force { color: white !important; } /* Para texto sobre placeholders escuros */
         
-        /* Estilos Modal (Detalhes e Confirmação) */
-        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
-        .modal.hidden { opacity: 0; visibility: hidden; }
-        .modal.visible { opacity: 1; visibility: visible; }
-        
-        /* Estilos Checkbox (Geral e Tabela) */
-        input[type="checkbox"]:disabled { opacity: 0.8; cursor: not-allowed; } 
-        input[type="checkbox"]:checked:disabled, input[type="checkbox"]:checked {
-            background-color: var(--brown-medium); border-color: var(--brown-medium);
+        /* Garante que o checkbox desabilitado tenha a cor da paleta */
+        input[type="checkbox"]:disabled {
+            opacity: 0.8;
         }
-        input[type="checkbox"]:focus, input[type="text"]:focus, textarea:focus {
-            --tw-ring-color: var(--brown-medium) !important; border-color: var(--brown-medium) !important;
+        input[type="checkbox"]:checked:disabled {
+            background-color: var(--brown-medium);
         }
-        .table-checkbox { @apply h-4 w-4 rounded text-brown-medium focus:ring-brown-medium border-gray-300 cursor-pointer; }
-        
-        /* Estilos Tabela Admin */
-        .table-input, .table-textarea {
-            @apply w-full p-1 border border-gray-300 rounded focus:ring-1 focus:ring-brown-medium focus:border-brown-medium text-sm;
-        }
-        .table-textarea { 
-            @apply resize-none overflow-hidden min-h-[40px]; /* resize-none e overflow-hidden para auto-altura */
-           } 
-        /* Mantém inputs de Nome e Idade com largura máxima, mas permite encolher */
-        .table-input.animal-nome { max-width: 150px; } 
-        .table-input.animal-idade { max-width: 80px; } 
-
-        
-        /* Botões Globais Admin e Confirmação */
-        .btn { @apply px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed; } 
-        .btn-primary { @apply bg-blue-500 hover:bg-blue-600 text-white; }
-        .btn-success { @apply bg-green-500 hover:bg-green-600 text-white; }
-        .btn-danger { @apply bg-red-500 hover:bg-red-600 text-white; }
-        .btn-secondary { @apply bg-gray-300 hover:bg-gray-400 text-gray-800; }
-
-        /* Novo estilo para botões CSV */
-        .btn-csv-export { 
-            background-color: #38A169; /* Verde mais claro (green-600) */
-            @apply text-white hover:bg-green-700;
-        }
-
-        /* Estilo para Limpar Tudo: Retangular e Vermelho Pouco Saturado */
-        .btn-clear-all-style {
-            background-color: #FDEAEA; /* Light, desaturated red (like red-100) */
-            color: var(--brown-dark); /* Texto mais escuro para contraste */
-            border: 1px solid #F59393; /* Borda sutil */
-            @apply hover:bg-red-200 font-bold shadow-md;
-        }
-        
-        /* Estilo dos Botões de Navegação Fixos (Sticky Nav) */
-        .btn-sticky-nav {
-            background-color: var(--brown-medium); /* NOVO: Fundo Marrom Médio */
-            color: var(--bg-light); /* NOVO: Texto Creme/Claro */
-            @apply shadow-xl border border-brown-dark transition-transform duration-300;
-        }
-        .btn-sticky-nav:hover {
-            @apply scale-105 bg-brown-dark; /* Opcional: Escurece um pouco no hover */
-        }
-
-        /* Container Sticky para Botões Admin */
-        .sticky-buttons {
-            position: sticky; top: 0; background-color: var(--bg-light); 
-            padding-top: 1rem; padding-bottom: 1rem; z-index: 20; 
-            border-bottom: 1px solid #e5e7eb; 
-        }
-
-        /* Tabela Wrapper para Scroll (se necessário) */
-        .table-wrapper { /* Sem max-height por padrão */ }
-
-        /* Utilitários */
-        .view-hidden { display: none; }
-
-        /* Ajuste específico para o botão de remover linha nova */
-        .remove-new-row { background: none; border: none; padding: 0; cursor: pointer; }
 
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
-    
-    <!-- Container Principal -->
-    <div id="main-container" class="container mx-auto max-w-7xl relative">
+
+    <div class="container mx-auto max-w-7xl">
         
-        <!-- Botão Admin -->
-        <button id="admin-button" title="Modo de Edição" class="absolute top-4 right-4 text-gray-500 hover:text-brown-dark text-2xl z-10">
-            <i class="fas fa-pencil-alt"></i> 
-        </button>
+        <!-- Cabeçalho com Logo, Título e Subtítulos -->
+        <header class="text-center mb-8">
+            <img src="https://static.wixstatic.com/media/1ff5c2_ac653801b5c844c09ce37b79a5a23ec1~mv2.png/v1/fill/w_86,h_83,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Indefesos.png" alt="Logo Indefesos" class="mx-auto mb-4 w-20 h-20 object-contain">
+            <h1 class="text-3xl md:text-5xl font-bold text-brown-dark">Campanha de Adoção</h1>
+            <p class="text-lg md:text-xl text-gray-600 mt-2">Clique em um animalzinho para conhecer sua história!</p>
+            
+            <!-- Informação discreta do evento -->
+            <p class="text-sm text-gray-500 mt-1">Edição Barra Shopping - 25/10/2025</p>
+        </header>
 
-        <!-- View da Galeria -->
-        <div id="gallery-view">
-            <header class="text-center mb-8 pt-8"> 
-                <img src="https://static.wixstatic.com/media/1ff5c2_ac653801b5c844c09ce37b79a5a23ec1~mv2.png/v1/fill/w_86,h_83,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Indefesos.png" alt="Logo Indefesos" class="mx-auto mb-4 w-20 h-20 object-contain">
-                <h1 class="text-3xl md:text-5xl font-bold text-brown-dark">Campanha de Adoção</h1>
-                <p class="text-lg md:text-xl text-gray-600 mt-2">Clique em um animalzinho para conhecer sua história!</p>
-                <p id="event-info" class="text-sm text-gray-500 mt-1">Edição Barra Shopping - 25/10/2025</p>
-            </header>
-            <!-- A galeria agora será o contêiner de ambas as seções (filhotes e adultos) -->
-            <main id="animal-gallery" class="flex flex-col gap-12">
-                <!-- Cards (serão renderizados via JS) -->
-            </main>
+        
+        <!-- Galeria principal onde os cards dos animais são inseridos via JS -->
+        <main id="animal-gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+            <!-- Cards dos animais serão populados aqui -->
+        </main>
+    </div>
 
-            <!-- Botões de Navegação Flutuantes (FIXED/STICKY) -->
-            <div id="sticky-nav-buttons" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30 hidden">
-                <button id="nav-filhotes-button" class="btn-sticky-nav px-4 py-3 font-semibold rounded-full transition-all text-sm">
-                    <i class="fas fa-paw mr-2"></i> Filhotes
-                </button>
-                <button id="nav-adultos-button" class="btn-sticky-nav px-4 py-3 font-semibold rounded-full transition-all text-sm">
-                    <i class="fas fa-dog mr-2"></i> Adultos
-                </button>
-            </div>
-        </div>
-
-        <!-- View de Admin -->
-        <div id="admin-view" class="view-hidden pt-16"> 
-             <h2 class="text-2xl md:text-3xl font-bold text-brown-dark mb-4 text-center">Editar Informações dos Animais</h2>
-             
-             <!-- Configuração do Evento -->
-             <div class="bg-white p-4 rounded-lg shadow mb-6">
-                 <h3 class="text-xl font-semibold text-brown-dark mb-3">Configuração do Evento</h3>
-                 <div class="flex flex-col md:flex-row gap-4 items-end">
-                     <!-- Campo Local -->
-                     <div class="flex-1">
-                         <strong class="text-sm text-gray-700 block mb-1">Local do Evento:</strong>
-                         <input type="text" id="local-input" placeholder="Ex: Barra Shopping" class="table-input w-full p-2" value="">
-                     </div>
-                     <!-- Campo Data -->
-                     <div class="flex-1">
-                         <strong class="text-sm text-gray-700 block mb-1">Data do Evento:</strong>
-                         <input type="text" id="data-input" placeholder="Ex: 25/10/2025" class="table-input w-full p-2" value="">
-                     </div>
-                     <!-- Botão Salvar -->
-                     <button id="save-evento-button" class="btn btn-primary w-full md:w-auto h-10 mt-4 md:mt-0"><i class="fas fa-calendar-alt mr-1"></i> Salvar Evento</button>
-                 </div>
-             </div>
-
-             <!-- Botões de Ação Global (STICKY) -->
-             <div class="sticky-buttons mb-4 flex justify-center flex-wrap gap-3"> 
-                 <button id="add-animal-button" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> Adicionar Novo</button>
-                 <button id="save-all-button" class="btn btn-success"><i class="fas fa-save mr-1"></i> Salvar Alterações</button>
-                 <button id="delete-selected-button" class="btn btn-danger"><i class="fas fa-trash-alt mr-1"></i> Deletar Selecionados</button> 
-                 <!-- Novo botão de Importar CSV -->
-                 <button id="import-csv-button" class="btn btn-csv-export"><i class="fas fa-file-import mr-1"></i> Importar CSV</button>
-                 <!-- Exportar CSV -->
-                 <button id="export-csv-button" class="btn btn-csv-export"><i class="fas fa-file-csv mr-1"></i> Exportar CSV</button>
-                 <!-- Limpar Tudo (último da linha, retangular, vermelho pouco saturado) -->
-                 <button id="clear-all-button" class="btn btn-clear-all-style rounded-lg !text-red-800"><i class="fas fa-triangle-exclamation mr-1"></i> Limpar Tudo</button>
-             </div>
-
-             <!-- Wrapper da Tabela -->
-             <div class="table-wrapper overflow-x-auto bg-white rounded-lg shadow">
-                 <table class="min-w-full divide-y divide-gray-200"> 
-                     <thead class="bg-gray-50">
-                         <tr>
-                             <!-- Colunas com larguras mais flexíveis, exceto checkboxes e idade -->
-                             <th class="px-3 py-3 text-center w-12"><input type="checkbox" id="select-all-rows" class="table-checkbox"></th> 
-                             <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12" title="Visível na galeria">
-                                 <i class="fas fa-eye"></i>
-                             </th>
-                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th> 
-                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Sexo</th> <!-- Nova coluna para Sexo -->
-                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Idade</th> <!-- Largura menor mantida -->
-                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">História</th> 
-                             <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Vacinado</th> 
-                             <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Castrado</th> 
-                             <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL Imagem</th> 
-                         </tr>
-                     </thead>
-                     <tbody id="admin-table-body" class="bg-white divide-y divide-gray-200">
-                         <!-- Linhas -->
-                     </tbody>
-                 </table>
-             </div>
-        </div>
-
-    </div> 
     
-    <!-- Input de arquivo CSV (escondido) -->
-    <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
-
-    <!-- Modal Detalhes Animal -->
-    <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+    <!-- Modal (Janela Flutuante) para detalhes do animal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-8 relative animate-fade-in">
+            
+            <!-- Botão de Fechar (X) -->
             <button id="close-modal" class="absolute top-1 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+            
+            <!-- Conteúdo do Modal -->
             <img id="modal-img" src="https://placehold.co/500x500/indigo/white?text=Adote!" alt="Foto do animal" class="w-full h-80 object-cover rounded-lg mb-4">
             <h2 id="modal-name" class="text-3xl font-bold text-brown-dark mb-2">Nome do Animal</h2>
+            
             <div class="space-y-3">
-                <div><strong class="text-gray-700">Idade:</strong> <span id="modal-age" class="text-gray-600"></span></div>
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center"><input id="modal-vacinado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300"><label for="modal-vacinado" class="ml-2 text-gray-700">Vacinado</label></div>
-                    <div class="flex items-center"><input id="modal-castrado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300"><label for="modal-castrado" class="ml-2 text-gray-700">Castrado</label></div>
+                <div>
+                    <strong class="text-gray-700">Idade:</strong>
+                    <span id="modal-age" class="text-gray-600"></span>
                 </div>
-                <div><strong class="text-gray-700">História:</strong> <p id="modal-history" class="text-gray-600"></p></div>
+                
+                
+                <!-- Checkboxes de Status -->
+                <div class="flex items-center space-x-6">
+                    
+                    <div class="flex items-center">
+                        <input id="modal-vacinado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300">
+                        <label for="modal-vacinado" class="ml-2 text-gray-700">Vacinado</label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input id="modal-castrado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300">
+                        <label for="modal-castrado" class="ml-2 text-gray-700">Castrado</label>
+                    </div>
+                </div>
+
+                <div>
+                    <strong class="text-gray-700">História:</strong>
+                    <p id="modal-history" class="text-gray-600"></p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Confirmação -->
-     <div id="confirm-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[60]"> 
-         <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6">
-             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Confirmar Ação</h3>
-             <div class="mt-2 mb-4">
-                 <p class="text-sm text-gray-500" id="confirm-message">Tem certeza?</p>
-             </div>
-             <div class="flex justify-end space-x-3">
-                 <button id="confirm-cancel-button" class="btn btn-secondary">Cancelar</button>
-                 <button id="confirm-ok-button" class="btn btn-danger">Confirmar</button> 
-             </div>
-         </div>
-     </div>
-
-     <!-- Modal de Alerta (Substitui alert()) -->
-    <div id="alert-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[70]"> 
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2" id="alert-title">Aviso</h3>
-            <div class="mt-2 mb-4">
-                <p class="text-sm text-gray-500" id="alert-message">Mensagem de aviso</p>
-            </div>
-            <div class="flex justify-end">
-                <button id="alert-ok-button" class="btn btn-primary">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Login/Autenticação para Admin -->
-    <div id="login-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 relative">
-            <h3 class="text-xl font-bold text-brown-dark mb-4 text-center">Acesso Restrito</h3>
-            <p class="text-gray-600 mb-4 text-center">Insira a senha de administrador para acessar o modo de edição.</p>
-            
-            <input type="password" id="login-password-input" placeholder="Senha do Administrador" class="table-input w-full p-3 mb-4 text-lg" required>
-            
-            <p id="login-error-message" class="text-red-500 text-sm mb-4 hidden">Senha incorreta. Tente novamente.</p>
-
-            <div class="flex flex-col space-y-3">
-                <button id="login-button" class="btn btn-primary rounded-lg text-lg">
-                    <i class="fas fa-lock-open mr-2"></i> Acessar Edição
-                </button>
-                <button id="login-cancel-button" class="btn btn-secondary rounded-lg">
-                    <i class="fas fa-arrow-left mr-2"></i> Voltar ao Catálogo
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Scripts Firebase -->
-    <script type="module">
-        // Importações Firebase
-        import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"; 
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Dados Iniciais (FALLBACK - REMOVIDO PARA REDUZIR TAMANHO DO CÓDIGO)
-        const initialAnimalData = []; // Lista vazia para garantir que o código seja pequeno
-        
-        // --- Configuração Firebase ---
-        setLogLevel('error'); 
-        
-        let firebaseConfig = null;
-        let externalFirebaseConfig = null;
-
-        // 1. Tenta carregar a configuração interna (Canvas)
-        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-            try {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } catch (e) {
-                console.error("Erro ao parsear __firebase_config:", e);
-            }
-        }
-        
-        // 2. >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
-        // SUBSTITUA "null" ABAIXO PELO SEU OBJETO firebaseConfig COMPLETO QUE VOCÊ COPIOU.
-        // O OBJETO DEVE SER COLADO ENTRE AS CHAVES { }
-        // EX: 
-        /*
-        externalFirebaseConfig = { 
-            apiKey: "SEU_API_KEY", 
-            authDomain: "SEU_DOMINIO.firebaseapp.com",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "...",
-            messagingSenderId: "...",
-            appId: "..."
-        };
-        */
-        externalFirebaseConfig = null; // <--- SUBSTITUA ESTE 'null' PELO SEU OBJETO FIREBASE (SE ESTIVER FORA DO CANVAS)
-
-        // Se a config externa existe, usa ela
-        if (!firebaseConfig && externalFirebaseConfig) {
-             firebaseConfig = externalFirebaseConfig;
-             console.log("Usando credenciais externas.");
-        }
+    <script>
+        // Dados dos animais (com status booleano e links de imagem) - ATUALIZADO
+        const animals = [
+            { nome: "Alice", idade: "2 anos", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png" },
+            { nome: "Alfredo", idade: "2 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png" },
+            { nome: "Amarelo", idade: "6 anos", historico: "Resgatado amarrado em um poste, com uma facada no rosto. Está há anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/t5gv8Z8.png" },
+            { nome: "Amora", idade: "5 anos", historico: "Vitima de maus tratos, resgatada na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1gOucov.png" },
+            { nome: "Angelo", idade: "4 anos", historico: "Resgatado da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/VQ8JWHF.png" },
+            { nome: "Ariel", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentro de um galinheiro.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/udjUsIK.png" },
+            { nome: "Athos", idade: "2 anos", historico: "Athos resgatado junto com a Kiara amarrado em um portão de uma casa em seropedica 11/06", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ygKFF2W.png" },
+            { nome: "Batman", idade: "5 meses", historico: "Resgatado muito filhote com seus irmãos, em São Gonçalo. Único filhote restante da ninhada.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/jUTi9tw.png" },
+            { nome: "Beethoven", idade: "6 anos", historico: "Resgatado em Santa Cruz com diversos tumores.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/yn5liYO.png" },
+            { nome: "Benji", idade: "1 ano", historico: "Resgatado da Fazenda Modelo, apreendido vitimas de maus tratos pelo Nas Garras da Lei.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lD6xOKX.png" },
+            { nome: "Beth", idade: "4 anos", historico: "Resgatada vitima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/cjiYcTv.png" },
+            { nome: "Betinho", idade: "11 meses", historico: "Vitima de maus tratos, resgatado pelo Nas garras da Lei. Vivia em cativeiro, não via a luz do dia.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/uK7Z81s.png" },
+            { nome: "Billy", idade: "3 anos", historico: "Resgatado na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gMXjwOy.png" },
+            { nome: "Britney", idade: "2 anos", historico: "Resgatada nas ruas de Queimados em agosto/25", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MaL0EJF.png" },
+            { nome: "Caetano", idade: "3 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l3udRvm.png" },
+            { nome: "Canela", idade: "1 ano", historico: "Resgatada em Caxias,quase sendo atropelada", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/CPWqiOF.png" },
+            { nome: "Cristal (Grande)", idade: "4/5 anos", historico: "Resgatada em um cubículo na comunidade dos Tabajaras, em Copacabana, Única que ainda não foi adotada.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PQXe98c.png" },
+            { nome: "Cristal", idade: "4 anos", historico: "Resgatada da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/7sRxpig.png" },
+            { nome: "Darth", idade: "6 anos", historico: "Resgatado filhote em Santo Cristo. Adotado e devolvido 2 anos depois.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/dQdmIlB.png" },
+            { nome: "Digo", idade: "5/6 anos", historico: "Resgatado das ruas,aonde viveu por 5 anos, em Duque de Caxias, era um cão comunitário, até que adoeceu. Resgatado com plaqueta baixa,grave.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Y6AEG4M.png" },
+            { nome: "Docinho/dentinha", idade: "3 anos", historico: "Resgatada abandonada em Sta Cruz", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/sng21o3.png" },
+            { nome: "Dominó", idade: "3 anos", historico: "Resgatado no Jacaré com seus 10 irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/4qtub21.png" },
+            { nome: "Elsa", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentrol de um galinheiro, com a Ariel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PdP1fYz.png" },
+            { nome: "Elvis", idade: "2 anos", historico: "Resgatada após morte da sua tutora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oeH7R52.png" },
+            { nome: "Feijão", idade: "4 anos", historico: "Resgatado na Fazenda Modelo 10/2024", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oi6dQm4.png" },
+            { nome: "Feliz", idade: "3 anos", historico: "Resgatado muito filhote com sua mãe e seus irmãos. Está há muito tempo no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Hj5qOIR.png" },
+            { nome: "Fênix", idade: "6/7 anos", historico: "Resgatado baleado após uma operação na cidade de Deus", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/rmbtu0g.png" },
+            { nome: "Isadora", idade: "2 anos", historico: "Resgatada em Seropédica, vivia nas ruas.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MAsffdQ.png" },
+            { nome: "Juca", idade: "11 meses", historico: "resgatado filhote com mãe e irmãos em Belfort roxo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l8jntRH.png" },
+            { nome: "Lara", idade: "2/3 anos", historico: "Resgatada por maus tratos no terraço de uma casa com sua filhote sem agua e comida por dias", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/i9HRWU7.png" },
+            { nome: "Leona", idade: "3 anos", historico: "Resgatada em Belfort Roxo, na beira da estrada, com seus filhotes. Mãe do Juca.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/nbFVcqt.png" },
+            { nome: "Lily", idade: "5 anos", historico: "Resgatada grávida em ilha de Guaratiba, em Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/pMxCTBC.png" },
+            { nome: "Liz", idade: "3 anos", historico: "Resgatada em Paciência atropelada. Recuperou os movimentos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Sa4Z85g.png" },
+            { nome: "Maisena", idade: "4 anos", historico: "Resgatado no mercado de Guaratiba final de 2023.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/DXBAPKk.png" },
+            { nome: "Manu", idade: "3 anos", historico: "Resgatada com seus filhotes Leticia, Cecilia e Pirata, nas ruas. Seus filhotes foram adotados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/I0VXyr9.png" },
+            { nome: "Marcelo", idade: "2 anos", historico: "Resgatado atropelado em Ilha de Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ff6Wi1x.png" },
+            { nome: "Marvilla", idade: "3 anos", historico: "Resgatada em Ilha de Guaratiba com seu filhote Vitinho. Estava no cio com machos a perseguindo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/8g7Gfbp.png" },
+            { nome: "Maya", idade: "4 anos", historico: "Resgatada vítima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/TmlobAz.png" },
+            { nome: "Nina", idade: "6 anos", historico: "Resgatada na PUC/RJ. Ficou dias vagando pela faculdade. Está há muitos anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/SVtyvIA.png" },
+            { nome: "Pablo", idade: "2 anos", historico: "Resgatado em Seropédica atropelado", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gGJu6oa.png" },
+            { nome: "Paper", idade: "1 ano e meio", historico: "Resgatado no Cachambi na comunidade Fernão Cardim.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/UTDSBCM.png" },
+            { nome: "Patrick", idade: "3 anos", historico: "Resgatado no antigo Cassino Bangu", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/6lSqGhR.png" },
+            { nome: "Pedro", idade: "4 anos", historico: "Resgatado da fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/9VgKnE5.png" },
+            { nome: "Peter", idade: "3 anos", historico: "Resgatado na Pavuna após a morte do seu tutor,com a pata traseira decepda e cheia de bichos. Amputoui a pata mas leva uma vida normal.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/JmOy7yv.png" },
+            { nome: "Pimpão", idade: "6 anos", historico: "Resgatado com outros 9 cães no Jacaré", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/NrQwzu6.png" },
+            { nome: "Pirata", idade: "2/3 anos", historico: "Resgatado com sua mãe e seus irmãos no metrô de Maria da Graça. Único que ainda não foi adotado.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/AJ8Af8v.png" },
+            { nome: "Princesa", idade: "5 anos", historico: "Resgatada de maus tratos, machucada, pele e osso.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Xb0WR8g.png" },
+            { nome: "Ramona", idade: "5 anos", historico: "Mãe do Feliz, resgatada com seus filhotes recém nascidos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/txUppNv.png" },
+            { nome: "Ravena", idade: "2 anos", historico: "histórico desconhecido", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/X3ghXQT.png" },
+            { nome: "Roberta", idade: "3 anos", historico: "Resgatada em Seropédica junto com Isadora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/n1DKHkS.png" },
+            { nome: "Scott", idade: "5 anos", historico: "abandonado pelas ruas de Maricá , resgatado pela ong Hope que nos pediu ajuda", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Q746sQ1.png" },
+            { nome: "Sonho", idade: "5 anos", historico: "Resgatado muito machucado no Uptown.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/kiCzetx.png" },
+            { nome: "Teodora", idade: "5 anos", historico: "Resgatada em Deodoro, no cio, com muitos cachorros em cima dela e ela fugindo deles e chorando.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lYoa67V.png" },
+            { nome: "Tigrinho", idade: "1 ano", historico: "Resgatado em hospedagem desconhecida em 11/24 com suas mães e irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/niEPyqz.png" },
+            { nome: "Tita", idade: "6/7 anos", historico: "Vitima de maus tratos, resgatada pela Prefeitura, foi tirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1JiJ72j.png" },
+            { nome: "Vitinho", idade: "5/6 meses", historico: "filho da Marvilla, resgatado em Illha de Guaratiba.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/YFhHa33.png" },
+            { nome: "Whitney", idade: "6 meses", historico: "Abandonada em 12/06 na rua do abrigo dos indefesos debaixo de temporal com os irmãos Elton e Hazel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/tMJrZfR.png" },
+            { nome: "Xanadu", idade: "6 anos", historico: "Resgatada nas paineiras com outros 2 cães", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Lhd95IL.png" }
+        ];
 
 
-        let app = null;
-        let db = null;
-        let auth = null;
-        let dbIsActive = false; // Flag para saber se o DB está realmente inicializado
-
-        // Se a config do Firebase estiver presente, inicializa.
-        if (firebaseConfig && firebaseConfig.projectId && firebaseConfig.apiKey) {
-            try {
-                 app = initializeApp(firebaseConfig);
-                 db = getFirestore(app);
-                 auth = getAuth(app);
-                 dbIsActive = true;
-            } catch (error) {
-                 console.error("Falha na inicialização do Firebase com as credenciais fornecidas:", error);
-                 dbIsActive = false;
-            }
-        } else {
-             // Caso não haja config, o app rodará sem Firebase, mas o código precisa ser resiliente
-            console.warn("Configuração do Firebase ausente. O aplicativo não terá persistência de dados.");
-        }
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; 
-
-        let userId = null; 
-        let animalsCollectionRef = null; 
-        let eventConfigDocRef = null;
-        let unsubscribe = null; 
-        
-        let localAnimals = []; 
-
-        // --- Elementos do DOM ---
-        const mainContainer = document.getElementById('main-container'); 
-        const galleryView = document.getElementById('gallery-view');
-        const adminView = document.getElementById('admin-view');
-        const adminButton = document.getElementById('admin-button');
+        // Elementos do DOM
         const gallery = document.getElementById('animal-gallery');
         const modal = document.getElementById('modal');
         const closeModalBtn = document.getElementById('close-modal');
@@ -361,966 +188,154 @@
         const modalVacinado = document.getElementById('modal-vacinado');
         const modalCastrado = document.getElementById('modal-castrado');
         const modalHistory = document.getElementById('modal-history');
-        const adminTableBody = document.getElementById('admin-table-body');
-        const addAnimalButton = document.getElementById('add-animal-button');
-        const saveAllButton = document.getElementById('save-all-button');
-        const clearAllButton = document.getElementById('clear-all-button');
-        const deleteSelectedButton = document.getElementById('delete-selected-button'); 
-        const selectAllCheckbox = document.getElementById('select-all-rows'); 
-        // Modal de Confirmação
-        const confirmModal = document.getElementById('confirm-modal');
-        const confirmMessage = document.getElementById('confirm-message');
-        const confirmOkButton = document.getElementById('confirm-ok-button');
-        const confirmCancelButton = document.getElementById('confirm-cancel-button');
-        // Modal de Alerta
-        const alertModal = document.getElementById('alert-modal');
-        const alertMessage = document.getElementById('alert-message');
-        const alertOkButton = document.getElementById('alert-ok-button');
-        const alertTitle = document.getElementById('alert-title');
-        // Modal de Login
-        const loginModal = document.getElementById('login-modal');
-        const loginPasswordInput = document.getElementById('login-password-input');
-        const loginButton = document.getElementById('login-button');
-        const loginCancelButton = document.getElementById('login-cancel-button');
-        const loginErrorMessage = document.getElementById('login-error-message');
-        // Input de Arquivo CSV
-        const csvFileInput = document.getElementById('csv-file-input');
-        
-        // Configuração do Evento
-        const eventInfoElement = document.getElementById('event-info');
-        const localInput = document.getElementById('local-input');
-        const dataInput = document.getElementById('data-input');
-        const saveEventoButton = document.getElementById('save-evento-button');
-        const exportCsvButton = document.getElementById('export-csv-button');
-        const importCsvButton = document.getElementById('import-csv-button');
-        // Botões de navegação flutuantes
-        const navFilhotesButton = document.getElementById('nav-filhotes-button');
-        const navAdultosButton = document.getElementById('nav-adultos-button');
-        const stickyNavButtons = document.getElementById('sticky-nav-buttons');
 
-        // Senha HARDCODED para simular acesso de gestores
-        const ADMIN_PASSWORD = "adoteja"; 
-        let isAdminLoggedIn = false; // Variável para controlar o estado de login na sessão
-
-        // --- Variáveis de Estado e Navegação ---
+        // --- Variáveis para Navegação ---
         let currentAnimalIndex = -1;
         let touchStartX = 0;
         let touchStartY = 0;
-        let isAdminView = false; 
-        let isSaving = false; 
-        let confirmationCallback = null; // Callback genérico para confirmação
+        // ---------------------------------
 
-
-        // --- Funções Auxiliares ---
-        function rgbToHex(r, g, b) { return [r, g, b].map(x => { const hex = x.toString(16); return hex.length === 1 ? '0' + hex : hex; }).join(''); }
-        const placeholderBgColor = rgbToHex(158, 117, 89);
-        const placeholderTextColor = rgbToHex(244, 243, 239);
-        
-        // Helper para obter o símbolo de gênero
-        function getGenderIcon(sexo) {
-            const gender = (sexo || '').toUpperCase();
-            // Retorna o símbolo Unicode correspondente, ou string vazia
-            return gender === 'F' ? '♀' : (gender === 'M' ? '♂' : '');
+        // Função para converter RGB para HEX (para URLs de placeholder)
+        function rgbToHex(r, g, b) {
+            return [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
         }
 
-        // NOVO: Função para verificar se é filhote com limite de 7 meses
-        function isPuppy(animal) {
-            const idadeStr = (animal.idade || '').toLowerCase();
-            
-            // 1. Deve conter "mes" ou "meses"
-            if (!idadeStr.includes('mes')) {
-                return false;
-            }
-            
-            // 2. Tenta extrair o número
-            const match = idadeStr.match(/(\d+)/);
-            if (match && match[1]) {
-                const meses = parseInt(match[1], 10);
-                // 3. Verifica a regra: menor ou igual a 7 meses
-                return meses <= 7;
-            }
-            
-            // Se for "meses" mas não conseguir extrair o número, usa o fallback (Adulto)
-            return false;
-        }
+        // Definindo as cores da paleta para os placeholders
+        const placeholderBgColor = rgbToHex(158, 117, 89); // Marrom médio
+        const placeholderTextColor = rgbToHex(244, 243, 239); // Branco acinzentado
 
-        // Função de scroll para as seções
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                // Rola para a seção, colocando o topo da seção no topo da viewport
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
+        // --- Funções de Navegação e Modal ---
 
-        // --- Funções do Modal (Detalhes e Confirmação) ---
-        function updateModalContent(index) { 
-            if (index < 0 || index >= localAnimals.length) { console.error("Índice de animal inválido:", index); return; }
-            currentAnimalIndex = index; const animal = localAnimals[index]; 
+        // Função separada para ATUALIZAR o conteúdo do modal
+        function updateModalContent(index) {
+            if (index < 0 || index >= animals.length) {
+                console.error("Índice de animal inválido:", index);
+                return;
+            }
+            
+            currentAnimalIndex = index; // Atualiza o índice global
+            const animal = animals[index];
+
             const placeholderUrlModal = `https://placehold.co/500x500/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
             const finalImageUrlModal = animal.imageUrl ? animal.imageUrl : placeholderUrlModal;
             
-            modalImg.src = finalImageUrlModal; 
-            modalImg.alt = `Foto de ${animal.nome}`; 
-            
-            // Adicionar ícone de gênero com a cor marrom mais clara
-            const genderIcon = getGenderIcon(animal.sexo);
-            const nameWithIcon = `${animal.nome || 'Nome do Animal'} <span class="text-brown-medium text-2xl">${genderIcon}</span>`;
-            modalName.innerHTML = nameWithIcon;
-
+            modalImg.src = finalImageUrlModal;
+            modalImg.alt = `Foto de ${animal.nome}`;
+            modalName.textContent = animal.nome;
             modalAge.textContent = (animal.idade && animal.idade !== "N/A") ? animal.idade : 'Não informada';
             modalHistory.textContent = (animal.historico && animal.historico !== "N/A") ? animal.historico : 'Nenhum histórico disponível.';
-            modalVacinado.checked = !!animal.vacinado; 
-            modalCastrado.checked = !!animal.castrado; 
-        }
-        function openModal(index) { updateModalContent(index); modal.classList.remove('hidden'); modal.classList.add('visible'); }
-        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('visible'); currentAnimalIndex = -1; }
-        
-        // Funções para Modal de Confirmação (Genérico)
-        function openConfirmModal(message, confirmText, onConfirm) {
-            confirmMessage.textContent = message;
-            confirmOkButton.textContent = confirmText || 'Confirmar'; // Texto do botão OK
-            confirmationCallback = onConfirm; // Guarda a função a ser executada
-            confirmModal.classList.remove('hidden');
-            confirmModal.classList.add('visible');
-        }
-        function closeConfirmModal() {
-            confirmModal.classList.add('hidden');
-            confirmModal.classList.remove('visible');
-            confirmationCallback = null; // Limpa o callback
+            modalVacinado.checked = animal.vacinado;
+            modalCastrado.checked = animal.castrado;
         }
 
-        // Funções para Modal de Alerta
-        function openAlertModal(message, title = "Aviso") {
-            alertTitle.textContent = title;
-            alertMessage.textContent = message;
-            alertModal.classList.remove('hidden');
-            alertModal.classList.add('visible');
-        }
-        function closeAlertModal() {
-            alertModal.classList.add('hidden');
-            alertModal.classList.remove('visible');
+        // Chama a função de atualização e mostra o modal
+        function openModal(index) {
+            updateModalContent(index); // Atualiza o conteúdo para o índice clicado
+            modal.classList.remove('hidden');
+            modal.classList.add('visible');
         }
 
-        // Funções para Modal de Login
-        function openLoginModal() {
-            loginPasswordInput.value = ''; // Limpa o campo
-            loginErrorMessage.classList.add('hidden');
-            loginModal.classList.remove('hidden');
-            loginModal.classList.add('visible');
-            loginPasswordInput.focus();
+        // Reseta o índice ao fechar
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('visible');
+            currentAnimalIndex = -1; // Reseta o índice
         }
 
-        function closeLoginModal() {
-            loginModal.classList.add('hidden');
-            loginModal.classList.remove('visible');
-        }
-
-        function handleAdminLogin() {
-            const enteredPassword = loginPasswordInput.value.trim();
-            if (enteredPassword === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true; // Define o status de login para a sessão
-                closeLoginModal();
-                // Alterna para a view de admin (toggleView inverte o estado isAdminView)
-                if (!isAdminView) {
-                     toggleView(); 
-                }
-            } else {
-                loginErrorMessage.textContent = "Senha incorreta. Tente novamente.";
-                loginErrorMessage.classList.remove('hidden');
-                loginPasswordInput.value = ''; // Limpa o campo para nova tentativa
-                loginPasswordInput.focus();
+        // Função para mostrar o próximo animal
+        function showNextAnimal() {
+            let nextIndex = currentAnimalIndex + 1;
+            if (nextIndex >= animals.length) {
+                nextIndex = 0; // Volta ao início
             }
+            updateModalContent(nextIndex);
         }
 
-
-        // --- Funções de Navegação (Modal Detalhes) ---
-        function showNextAnimal() { 
-            let nextIndex = currentAnimalIndex + 1; 
-            if (nextIndex >= localAnimals.length) nextIndex = 0; 
-            updateModalContent(nextIndex); 
-        }
-        function showPreviousAnimal() { 
-            let prevIndex = currentAnimalIndex - 1; 
-            if (prevIndex < 0) prevIndex = localAnimals.length - 1; 
-            updateModalContent(prevIndex); 
-        }
-        
-        // Função auxiliar para criar o container de cards
-        function createAnimalCardContainer(animals) {
-            const container = document.createElement('div');
-            container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-4';
-            
-            animals.forEach((animal) => { 
-                // CORREÇÃO: Usar o ID do animal para garantir a abertura correta do modal.
-                // O ID é o identificador único, seja ele do Firebase ou local.
-                const originalIndex = localAnimals.findIndex(a => a.id === animal.id); 
-                if (originalIndex === -1) return; 
-
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 relative';
-                const placeholderUrlCard = `https://placehold.co/300x200/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome || '...')}`; 
-                const finalImageUrlCard = animal.imageUrl ? animal.imageUrl : placeholderUrlCard;
-                
-                // Configuração do Ícone de Gênero para o Card (Top Right, Branco)
-                const genderIcon = getGenderIcon(animal.sexo);
-                const genderHtml = genderIcon ? `<div class="absolute top-2 right-2 text-white text-2xl font-bold p-1 rounded-full bg-black bg-opacity-30 leading-none">${genderIcon}</div>` : '';
-
-                card.innerHTML = `
-                    <img src="${finalImageUrlCard}" alt="Foto de ${animal.nome || 'Animal'}" class="w-full h-40 object-cover" onerror="this.src='${placeholderUrlCard}'"> 
-                    ${genderHtml}
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold text-brown-medium text-center">${animal.nome || 'Nome Indefinido'}</h3>
-                    </div>
-                `;
-                // Usar o originalIndex para abrir o modal correto
-                card.addEventListener('click', () => openModal(originalIndex)); 
-                container.appendChild(card);
-            });
-            return container;
-        }
-
-
-        // --- Funções de Renderização UI ---
-        function renderGallery() { 
-            gallery.innerHTML = ''; 
-            
-            // FILTRAR animais visíveis
-            const visibleAnimals = localAnimals.filter(animal => animal.visivel !== false);
-
-            // CATEGORIZAÇÃO: Filhotes (<= 7 meses) vs Adultos (o resto)
-            const filhotes = visibleAnimals.filter(isPuppy); // Usa a função isPuppy
-            const adultos = visibleAnimals.filter(animal => !isPuppy(animal)); // O restante são adultos
-
-            // Ordena os dois grupos por nome
-            const sortedFilhotes = [...filhotes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-            const sortedAdultos = [...adultos].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-            
-            let hasFilhotes = sortedFilhotes.length > 0;
-            let hasAdultos = sortedAdultos.length > 0;
-
-            // Controla a visibilidade do container principal de botões
-            if (hasFilhotes || hasAdultos) {
-                stickyNavButtons.classList.remove('hidden');
-            } else {
-                stickyNavButtons.classList.add('hidden');
+        // Função para mostrar o animal anterior
+        function showPreviousAnimal() {
+            let prevIndex = currentAnimalIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = animals.length - 1; // Vai para o fim
             }
-
-            // Controla a visibilidade individual dos botões flutuantes
-            navFilhotesButton.classList.toggle('hidden', !hasFilhotes);
-            navAdultosButton.classList.toggle('hidden', !hasAdultos);
-
-
-            // 1. Renderiza Filhotes
-            if (hasFilhotes) {
-                const filhotesTitle = document.createElement('h2');
-                filhotesTitle.id = 'filhotes-section'; // ID para âncora de scroll
-                filhotesTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
-                // TÍTULO ATUALIZADO
-                filhotesTitle.innerHTML = '<i class="fas fa-paw mr-3"></i> Filhotes (Até 7 meses)';
-                gallery.appendChild(filhotesTitle);
-                gallery.appendChild(createAnimalCardContainer(sortedFilhotes));
-            }
-
-            // 2. Renderiza Adultos
-            if (hasAdultos) {
-                const adultosTitle = document.createElement('h2');
-                adultosTitle.id = 'adultos-section'; // ID para âncora de scroll
-                adultosTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
-                // TÍTULO ATUALIZADO
-                adultosTitle.innerHTML = '<i class="fas fa-dog mr-3"></i> Adultos (Mais de 7 meses)';
-                gallery.appendChild(adultosTitle);
-                gallery.appendChild(createAnimalCardContainer(sortedAdultos));
-            }
-
-            // 3. Mensagem se não houver animais visíveis
-            if (sortedFilhotes.length === 0 && sortedAdultos.length === 0) {
-                gallery.innerHTML = '<p class="text-center text-xl text-gray-500 mt-10">Nenhum animal visível para adoção no momento.</p>';
-            }
+            updateModalContent(prevIndex);
         }
 
-        function renderAdminTable() { 
-            adminTableBody.innerHTML = ''; 
-            selectAllCheckbox.checked = false; 
-            selectAllCheckbox.indeterminate = false; 
-            const sortedAnimals = [...localAnimals].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-            sortedAnimals.forEach(animal => {
-                const row = createAdminTableRow(animal);
-                adminTableBody.appendChild(row); 
-                const textarea = row.querySelector('.animal-historico');
-                if (textarea) {
-                    autoResizeTextarea(textarea); 
-                    textarea.addEventListener('input', () => autoResizeTextarea(textarea));
-                }
-            });
-            setupSelectAllListener();
-        }
-        
-        // Função auxiliar para criar linha da tabela
-        function createAdminTableRow(animal = null) {
-            const row = document.createElement('tr');
-            const isNew = !animal; 
-            const id = animal ? animal.id : '';
-            const nome = animal ? (animal.nome || '') : '';
-            const sexo = animal ? (animal.sexo || '') : ''; // Novo campo Sexo
-            const idade = animal ? (animal.idade || '') : '';
-            const historico = animal ? (animal.historico || '') : '';
-            const imageUrl = animal ? (animal.imageUrl || '') : '';
-            const vacinadoChecked = animal && animal.vacinado ? 'checked' : '';
-            const castradoChecked = animal && animal.castrado ? 'checked' : '';
-            // Padrão é visível (true ou undefined), apenas false oculta
-            const isVisivel = animal ? animal.visivel !== false : true; 
-            
-            row.setAttribute('data-id', id); 
-            if (isNew) row.classList.add('new-row', 'bg-blue-50'); 
-            
-            row.innerHTML = `
-                <!-- Coluna Seleção/Remover Novo -->
-                <td class="px-3 py-2 text-center align-middle">
-                    ${isNew 
-                        ? '<button class="text-red-500 hover:text-red-700 remove-new-row" title="Remover esta linha"><i class="fas fa-times-circle"></i></button>' 
-                        : '<input type="checkbox" class="table-checkbox row-select">' 
-                    }
-                </td> 
 
-                <!-- Coluna Visibilidade -->
-                <td class="px-3 py-2 text-center align-middle">
-                    <button class="text-gray-500 hover:text-brown-dark toggle-visibilidade" title="${isVisivel ? 'Visível (clique para ocultar)' : 'Oculto (clique para mostrar)'}">
-                        <i class="fas ${isVisivel ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                    </button>
-                </td>
 
-                <td class="px-3 py-2 whitespace-nowrap"><input type="text" value="${nome}" placeholder="Nome *" class="table-input animal-nome"></td>
-                <!-- Nova coluna para Sexo -->
-                <td class="px-3 py-2 whitespace-nowrap"><input type="text" value="${sexo}" placeholder="M/F" class="table-input animal-sexo max-w-[50px]"></td>
-                <td class="px-3 py-2 whitespace-nowrap"><input type="text" value="${idade}" placeholder="Idade" class="table-input animal-idade"></td>
-                <td class="px-3 py-2"><textarea placeholder="História" class="table-textarea animal-historico">${historico}</textarea></td>
-                <td class="px-3 py-2 text-center align-middle"><input type="checkbox" ${vacinadoChecked} class="table-checkbox animal-vacinado"></td>
-                <td class="px-3 py-2 text-center align-middle"><input type="checkbox" ${castradoChecked} class="table-checkbox animal-castrado"></td>
-                <td class="px-3 py-2"><input type="text" value="${imageUrl}" placeholder="URL da Imagem" class="table-input animal-imageUrl"></td>
+        // --- Configuração Inicial e Event Listeners ---
+
+        // Popula a galeria (passando o índice)
+        animals.forEach((animal, index) => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105';
+            
+            const placeholderUrlCard = `https://placehold.co/300x200/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
+            const finalImageUrlCard = animal.imageUrl ? animal.imageUrl : placeholderUrlCard;
+            
+            card.innerHTML = `
+                <img src="${finalImageUrlCard}" alt="Foto de ${animal.nome}" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-brown-medium text-center">${animal.nome}</h3>
+                </div>
             `;
             
-            // Adiciona listener para o botão de visibilidade
-            const toggleBtn = row.querySelector('.toggle-visibilidade');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', (e) => {
-                    e.preventDefault(); // Impedir qualquer comportamento padrão
-                    const icon = toggleBtn.querySelector('i');
-                    if (icon.classList.contains('fa-eye')) {
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                        toggleBtn.title = "Oculto (clique para mostrar)";
-                    } else {
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                        toggleBtn.title = "Visível (clique para mostrar)";
-                    }
-                });
-            }
-
-            if (isNew) {
-                row.querySelector('.remove-new-row').addEventListener('click', () => row.remove());
-            } else {
-                row.querySelector('.row-select').addEventListener('change', updateSelectAllState);
-            }
+            // Passa o 'index' em vez do objeto 'animal'
+            card.addEventListener('click', () => openModal(index));
             
-            return row;
-        }
-
-        // Configura o listener do checkbox "Selecionar Todos"
-        function setupSelectAllListener() {
-            selectAllCheckbox.removeEventListener('change', handleSelectAllChange); 
-            selectAllCheckbox.addEventListener('change', handleSelectAllChange);
-        }
-        // Handler para o clique no "Selecionar Todos"
-        function handleSelectAllChange() {
-            const isChecked = selectAllCheckbox.checked;
-            adminTableBody.querySelectorAll('.row-select:not(:disabled)').forEach(checkbox => { 
-                checkbox.checked = isChecked;
-            });
-        }
-        // Atualiza o estado do checkbox "Selecionar Todos" baseado nas linhas
-        function updateSelectAllState() {
-            const rowCheckboxes = adminTableBody.querySelectorAll('.row-select:not(:disabled)');
-            const checkedCount = adminTableBody.querySelectorAll('.row-select:checked:not(:disabled)').length;
-            const totalSelectable = rowCheckboxes.length;
-
-            if (totalSelectable === 0) {
-                selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false;
-            } else if (checkedCount === 0) {
-                selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false;
-            } else if (checkedCount === totalSelectable) {
-                selectAllCheckbox.checked = true; selectAllCheckbox.indeterminate = false;
-            } else {
-                selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = true; 
-            }
-        }
-        
-        // Função para ajustar altura do textarea
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto'; // Reseta a altura
-            // Adiciona um pequeno buffer (ex: 4px) para evitar scrollbar desnecessário em alguns casos
-            textarea.style.height = (textarea.scrollHeight + 4) + 'px'; 
-        }
-
-        // --- Função de Exportar CSV ---
-        function exportToCSV() {
-            console.log("Iniciando exportação CSV...");
-            if (localAnimals.length === 0) {
-                openAlertModal("Não há dados para exportar.");
-                return;
-            }
-
-            const headers = ["Visivel", "Nome", "Sexo", "Idade", "Historico", "Vacinado", "Castrado", "ImageUrl"]; // Adiciona Sexo
-            
-            // Função para escapar dados para CSV (lidar com vírgulas, aspas e quebras de linha)
-            const escapeCSV = (str) => {
-                if (str === null || str === undefined) str = "";
-                let result = String(str);
-                // Se contém vírgula, quebra de linha ou aspas, envolve com aspas duplas
-                if (result.search(/("|,|\n)/g) >= 0) {
-                    result = `"${result.replace(/"/g, '""')}"`; // Escapa aspas duplas internas com outra aspas duplas
-                }
-                return result;
-            };
-
-            // Ordena os animais por nome antes de exportar
-            const sortedAnimals = [...localAnimals].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-
-            const csvRows = [headers.join(',')]; // Adiciona cabeçalho
-
-            // Adiciona linhas de dados
-            sortedAnimals.forEach(animal => {
-                const row = [
-                    animal.visivel !== false ? "Sim" : "Não", // Adiciona status de visibilidade
-                    escapeCSV(animal.nome),
-                    escapeCSV(animal.sexo), // Novo campo Sexo
-                    escapeCSV(animal.idade),
-                    escapeCSV(animal.historico),
-                    animal.vacinado ? "Sim" : "Não", // Mais legível no CSV
-                    animal.castrado ? "Sim" : "Não", // Mais legível no CSV
-                    escapeCSV(animal.imageUrl)
-                ];
-                csvRows.push(row.join(','));
-            });
-
-            const csvString = csvRows.join('\r\n'); // Junta as linhas com quebra de linha padrão
-            
-            // Cria o link de download
-            const blob = new Blob([`\uFEFF${csvString}`], { type: 'text/csv;charset=utf-8;' }); // \uFEFF para BOM UTF-8 (ajuda Excel)
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute("href", url);
-            link.setAttribute("download", "campanha_adocao.csv");
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            console.log("Exportação CSV concluída.");
-        }
-
-        // --- Função de Importar CSV (Corrigida) ---
-        function importFromCSV() {
-            if (!dbIsActive) {
-                openAlertModal("Funcionalidade de Banco de Dados indisponível. Conecte o Firebase e recarregue.", "Erro de Conexão"); 
-                return; 
-            }
-            // Simula o clique no input de arquivo
-            csvFileInput.click();
-        }
-
-        // Handler para o input de arquivo (executado quando o arquivo é selecionado)
-        csvFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const csvText = e.target.result;
-                processCSV(csvText);
-            };
-            reader.readAsText(file);
-            // Limpa o input para permitir o upload do mesmo arquivo novamente
-            event.target.value = null; 
+            gallery.appendChild(card);
         });
 
-        // Função principal para processar o texto CSV
-        async function processCSV(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim() !== '');
-            if (lines.length <= 1) {
-                openAlertModal("O arquivo CSV está vazio ou contém apenas o cabeçalho.", "Erro de Importação");
-                return;
-            }
-
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            const dataLines = lines.slice(1);
-            
-            if (headers.length !== 8 || headers[1] !== "Nome") {
-                 openAlertModal("O formato do CSV está incorreto. Espera-se: Visivel, Nome, Sexo, Idade, Historico, Vacinado, Castrado, ImageUrl.", "Erro de Cabeçalho");
-                 return;
-            }
-
-            const batch = writeBatch(db);
-            let operationsCount = 0;
-            let currentNames = new Set(localAnimals.map(a => a.nome)); // Para encontrar IDs existentes
-            let errors = [];
-
-            dataLines.forEach((line, index) => {
-                const values = parseCSVLine(line);
-                
-                // Mapeamento baseado na ordem do cabeçalho
-                const animalData = {
-                    visivel: values[0]?.toUpperCase() === 'SIM' || values[0]?.toUpperCase() === 'TRUE',
-                    nome: values[1]?.trim() || '',
-                    sexo: values[2]?.trim().toUpperCase() || 'N/A',
-                    idade: values[3]?.trim() || 'N/A',
-                    historico: values[4]?.trim() || '',
-                    vacinado: values[5]?.toUpperCase() === 'SIM' || values[5]?.toUpperCase() === 'TRUE',
-                    castrado: values[6]?.toUpperCase() === 'SIM' || values[6]?.toUpperCase() === 'TRUE',
-                    imageUrl: values[7]?.trim() || ''
-                };
-
-                if (!animalData.nome) {
-                    errors.push(`Linha ${index + 2}: Nome do animal está vazio. Ignorado.`);
-                    return;
-                }
-
-                try {
-                    const existingAnimal = localAnimals.find(a => a.nome === animalData.nome);
-                    
-                    if (existingAnimal) {
-                        // UPDATE: Encontrou pelo nome
-                        const docRef = doc(db, animalsCollectionRef.path, existingAnimal.id);
-                        batch.update(docRef, animalData);
-                        operationsCount++;
-                    } else {
-                        // ADD: Novo animal
-                        const newDocRef = doc(animalsCollectionRef); 
-                        batch.set(newDocRef, animalData);
-                        operationsCount++;
-                    }
-                } catch (e) {
-                    errors.push(`Linha ${index + 2}: Erro ao preparar operação. Detalhes: ${e.message}`);
-                }
-            });
-
-            if (operationsCount === 0) {
-                 openAlertModal("Nenhuma operação válida para importação foi encontrada no arquivo.", "Importação Vazia");
-                 return;
-            }
-
-            try {
-                await batch.commit();
-                let successMessage = `${operationsCount} animais foram atualizados/adicionados com sucesso.`;
-                if (errors.length > 0) {
-                    successMessage += ` Atenção: ${errors.length} erros/avisos. Verifique o console.`;
-                    console.warn("Erros/Avisos durante a importação:", errors);
-                }
-                openAlertModal(successMessage, "Importação Concluída");
-            } catch (error) {
-                console.error("Erro ao commitar batch de importação:", error);
-                openAlertModal(`Erro fatal ao salvar no banco de dados. Verifique o console e as Regras de Segurança.`, "Erro de Banco de Dados");
-            }
-        }
-        
-        // Função auxiliar para parsear linhas com aspas
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    // Trata aspas escapadas ("")
-                    if (inQuotes && line[i + 1] === '"') {
-                        current += '"';
-                        i++; // Pula o próximo aspas
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current.trim());
-            return result.map(s => s.startsWith('"') && s.endsWith('"') ? s.slice(1, -1) : s);
-        }
-
-        // --- Funções CRUD Firestore ---
-
-        async function saveAllChanges() {
-            if (!dbIsActive) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Conecte o Firebase e recarregue.", "Erro de Conexão"); return; }
-            if (isSaving || !animalsCollectionRef) { console.warn("Salvamento em progresso/coleção inválida."); return; }
-            isSaving = true; saveAllButton.disabled = true; saveAllButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Salvando...';
-            console.log("Iniciando save all...");
-
-            const batch = writeBatch(db); const rows = adminTableBody.querySelectorAll('tr'); 
-            let operationsCount = 0; let hasError = false;
-
-            rows.forEach(row => {
-                const docId = row.getAttribute('data-id'); 
-                const isNew = row.classList.contains('new-row') || !docId; 
-                
-                const toggleIcon = row.querySelector('.toggle-visibilidade i');
-                
-                const data = {
-                    visivel: toggleIcon ? toggleIcon.classList.contains('fa-eye') : true, // Lê o estado do ícone
-                    nome: row.querySelector('.animal-nome').value.trim(), 
-                    sexo: row.querySelector('.animal-sexo').value.trim().toUpperCase(), // Novo campo Sexo
-                    idade: row.querySelector('.animal-idade').value.trim() || 'N/A', 
-                    historico: row.querySelector('.animal-historico').value.trim() || '', // Certifique-se que é string, não null
-                    vacinado: row.querySelector('.animal-vacinado').checked,
-                    castrado: row.querySelector('.animal-castrado').checked, 
-                    imageUrl: row.querySelector('.animal-imageUrl').value.trim()
-                };
-                if (!data.nome) { console.warn("Linha ignorada: Nome vazio.", row); row.classList.add('bg-red-100'); hasError = true; return; } 
-                else { row.classList.remove('bg-red-100'); }
-
-                try {
-                    if (isNew) {
-                        const newDocRef = doc(animalsCollectionRef); 
-                        batch.set(newDocRef, data); console.log("Batch Add:", data.nome);
-                        operationsCount++;
-                    } else {
-                        const originalAnimal = localAnimals.find(a => a.id === docId);
-                        // Apenas atualiza se houve MUDANÇAS para evitar escritas desnecessárias
-                        if (originalAnimal && (
-                            (originalAnimal.visivel !== false) !== data.visivel || 
-                            originalAnimal.nome !== data.nome || 
-                            (originalAnimal.sexo || '').toUpperCase() !== data.sexo || 
-                            originalAnimal.idade !== data.idade || 
-                            originalAnimal.historico !== data.historico || 
-                            originalAnimal.vacinado !== data.vacinado || 
-                            originalAnimal.castrado !== data.castrado || 
-                            originalAnimal.imageUrl !== data.imageUrl
-                        )) {
-                            const docRef = doc(animalsCollectionRef, docId); 
-                            batch.update(docRef, data); console.log("Batch Update:", data.nome, docId);
-                            operationsCount++; 
-                        } else {
-                            console.log("Sem mudanças para:", data.nome);
-                        }
-                    }
-                } catch (e) { console.error("Erro batch:", data.nome, e); row.classList.add('bg-red-100'); hasError = true; }
-            });
-
-            if (hasError) { console.error("Erros. Save cancelado."); isSaving = false; saveAllButton.disabled = false; saveAllButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Erro'; return; }
-            if (operationsCount === 0) { console.log("Nenhuma alteração."); isSaving = false; saveAllButton.disabled = false; saveAllButton.innerHTML = '<i class="fas fa-save mr-1"></i> Salvar Alterações'; return; }
-
-            try {
-                await batch.commit(); console.log(`${operationsCount} alterações salvas.`);
-                saveAllButton.innerHTML = '<i class="fas fa-check mr-1"></i> Salvo!'; setTimeout(() => { saveAllButton.innerHTML = '<i class="fas fa-save mr-1"></i> Salvar Alterações'; }, 2000);
-            } catch (error) { 
-                console.error("Erro commit:", error); 
-                openAlertModal(`Erro ao salvar: ${error.message}. Verifique as permissões de escrita no Firestore.`, "Erro de Salvamento");
-                saveAllButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Erro';
-            } finally { isSaving = false; saveAllButton.disabled = false; }
-        }
-
-        async function deleteSelected() {
-            if (!dbIsActive) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Conecte o Firebase e recarregue.", "Erro de Conexão"); return; }
-            if (isSaving || !animalsCollectionRef) { console.warn("Aguarde save/coleção inválida."); return; }
-            const selectedCheckboxes = adminTableBody.querySelectorAll('.row-select:checked:not(:disabled)'); 
-            const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest('tr').getAttribute('data-id')).filter(id => id); 
-
-            if (idsToDelete.length === 0) { console.log("Nenhum selecionado para deletar."); return; }
-            
-            openConfirmModal(
-                `Tem certeza que deseja deletar os ${idsToDelete.length} animais selecionados?`, 
-                'Confirmar Deleção', 
-                async () => { 
-                    closeConfirmModal(); console.log("Deletando selecionados:", idsToDelete);
-                    deleteSelectedButton.disabled = true; deleteSelectedButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Deletando...';
-                    try {
-                        const batch = writeBatch(db);
-                        idsToDelete.forEach(id => batch.delete(doc(animalsCollectionRef, id)));
-                        await batch.commit();
-                        console.log(`${idsToDelete.length} deletados.`);
-                        openAlertModal(`${idsToDelete.length} animais deletados com sucesso.`, "Sucesso");
-                    } catch (error) { 
-                        console.error("Erro ao deletar:", error); 
-                        openAlertModal(`Erro ao deletar: ${error.message}. Verifique as permissões de escrita.`, "Erro");
-                    } finally {
-                        deleteSelectedButton.disabled = false; deleteSelectedButton.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Deletar Selecionados';
-                        selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false;
-                    }
-                }
-            );
-        }
-
-        async function clearAllData() { 
-            if (!dbIsActive) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Conecte o Firebase e recarregue.", "Erro de Conexão"); return; }
-            if (isSaving || !animalsCollectionRef) { console.warn("Aguarde save/coleção inválida."); return; }
-            console.log("Iniciando clear all..."); closeConfirmModal(); 
-            clearAllButton.disabled = true; clearAllButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Limpando...';
-            try {
-                const snapshot = await getDocs(query(animalsCollectionRef)); 
-                if (snapshot.empty) { console.log("Já vazio."); return; }
-                const batch = writeBatch(db); snapshot.docs.forEach(d => batch.delete(d.ref));
-                await batch.commit(); console.log(`${snapshot.size} deletados.`);
-                openAlertModal(`${snapshot.size} animais removidos.`, "Sucesso");
-            } catch (error) { 
-                console.error("Erro clear all:", error); 
-                openAlertModal(`Erro ao limpar dados: ${error.message}. Verifique as permissões de escrita.`, "Erro");
-            } finally {
-                clearAllButton.disabled = false; 
-                // Aplicar a classe correta após a operação
-                clearAllButton.classList.remove('bg-gray-400'); // Remover cor de loading
-                clearAllButton.innerHTML = '<i class="fas fa-triangle-exclamation mr-1"></i> Limpar Tudo';
-            }
-        }
-        
-        // Adiciona nova linha e ROLA para o topo
-        function addNewAnimalRow() { 
-            if (!isAdminView) return; 
-            const newRow = createAdminTableRow(); 
-            adminTableBody.insertBefore(newRow, adminTableBody.firstChild);
-            newRow.querySelector('.animal-nome').focus();
-            // Adiciona listener para auto-resize da nova linha
-            const newTextarea = newRow.querySelector('.animal-historico');
-            if (newTextarea) {
-                newTextarea.addEventListener('input', () => autoResizeTextarea(newTextarea));
-            }
-            // Scroll suave para o topo do adminView
-            adminView.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
-        }
-
-        // --- Funções de Configuração do Evento ---
-        async function saveEventConfig() {
-            if (!dbIsActive) { openAlertModal("Funcionalidade de Banco de Dados indisponível. Conecte o Firebase e recarregue.", "Erro de Conexão"); return; }
-            if (!eventConfigDocRef) { console.error("Ref de config inválida."); openAlertModal("Erro: Configuração de evento não inicializada.", "Erro"); return; }
-            
-            const local = localInput.value.trim();
-            const data = dataInput.value.trim();
-            
-            try {
-                await setDoc(eventConfigDocRef, { local, data });
-                eventInfoElement.textContent = `Edição ${local} - ${data}`;
-                openAlertModal("Local e data do evento salvos com sucesso!", "Sucesso");
-            } catch (error) {
-                console.error("Erro ao salvar config do evento:", error);
-                openAlertModal(`Erro ao salvar a configuração do evento: ${error.message}`, "Erro");
-            }
-        }
-
-        async function loadEventConfig() {
-            if (!dbIsActive) return; // Não tenta carregar se o Firebase não estiver ativo
-             if (!eventConfigDocRef) { console.warn("Ref de config inválida."); return; }
-
-             try {
-                 const docSnap = await getDoc(eventConfigDocRef);
-                 if (docSnap.exists()) {
-                     const { local, data } = docSnap.data();
-                     localInput.value = local || '';
-                     dataInput.value = data || '';
-                     if (local && data) {
-                         eventInfoElement.textContent = `Edição ${local} - ${data}`;
-                     }
-                 }
-             } catch (error) {
-                 console.error("Erro ao carregar config do evento:", error);
-             }
-         }
-
-        // --- Função de Troca de Views ---
-        function toggleView() { 
-            isAdminView = !isAdminView;
-            if (isAdminView) {
-                galleryView.classList.add('view-hidden'); adminView.classList.remove('view-hidden');
-                adminButton.innerHTML = '<i class="fas fa-eye"></i>'; adminButton.title = "Ver Galeria";
-                renderAdminTable(); 
-            } else {
-                adminView.classList.add('view-hidden'); galleryView.classList.remove('view-hidden');
-                adminButton.innerHTML = '<i class="fas fa-pencil-alt"></i>'; adminButton.title = "Modo de Edição";
-                renderGallery(); 
-            }
-        }
-
-        // --- Autenticação e Inicialização ---
-        async function initializeAppWithAuth() { 
-            
-            if (!dbIsActive || !auth) { 
-                // Se o Firebase não está ativo (sem credenciais ou falha na inicialização), usa dados locais.
-                mainContainer.classList.remove('view-hidden');
-                renderGallery();
-                return;
-            }
-
-            try {
-                let userCredential;
-                // Tenta signInWithCustomToken se a variável estiver definida (Ambiente Canvas)
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { 
-                    userCredential = await signInWithCustomToken(auth, __initial_auth_token); 
-                    console.log("Auth token (Canvas)."); 
-                } 
-                // Caso contrário (Deploy Externo), usa signInAnonymously
-                if (!userCredential || !userCredential.user) {
-                     userCredential = await signInAnonymously(auth); 
-                     console.log("Auth anon (External/Fallback).");
-                }
-
-                if (userCredential && userCredential.user) {
-                    userId = userCredential.user.uid; console.log("UserID:", userId);
-                    
-                    // Definição das referências do Firestore (APONTA PARA A ÁREA PÚBLICA)
-                    const collectionPath = `artifacts/${appId}/public/data/dogs`; 
-                    animalsCollectionRef = collection(db, collectionPath); 
-                    console.log("Ref Animais:", collectionPath);
-
-                    const eventConfigPath = `artifacts/${appId}/public/data/config/eventConfig`;
-                    eventConfigDocRef = doc(db, eventConfigPath);
-                    console.log("Ref Evento:", eventConfigPath);
-
-                    await loadEventConfig(); // Carregar config do evento
-                    setupFirestoreListener(); 
-                    mainContainer.classList.remove('view-hidden'); 
-                } else { 
-                    console.error("Falha user auth após tentativas."); 
-                    handleLogoutState(); // Exibe o alerta de autenticação
-                }
-                
-                // Configura o listener de estado de autenticação (mantido para compatibilidade)
-                onAuthStateChanged(auth, (user) => { 
-                    if (!user) { 
-                        console.log("User deslogado (auth listener)."); 
-                        // Mostra o alerta apenas se o DB estiver ativo (se for falha de auth, e não falha de config)
-                        if (dbIsActive) handleLogoutState();
-                    } 
-                    // O restante da lógica de inicialização é tratado acima para evitar loops.
-                });
-            } catch (error) { 
-                console.error("Erro fatal durante a autenticação:", error); 
-                // Se falhar, exibe o alerta de autenticação
-                handleLogoutState(); 
-            }
-        }
-
-        // Remover a função checkAndPopulateFirestore, pois ela estava causando erros com a lista vazia.
-        // O app agora depende da primeira importação ou adição manual de dados.
-        
-
-        function setupFirestoreListener() { 
-            if (!dbIsActive) return; 
-            if (!animalsCollectionRef) { console.error("Ref inválida listener."); return; } 
-            if (unsubscribe) { console.log("Parando listener."); unsubscribe(); }
-            console.log("Iniciando listener:", animalsCollectionRef.path); 
-            const q = query(animalsCollectionRef); 
-            unsubscribe = onSnapshot(q, (snapshot) => {
-                mainContainer.classList.remove('view-hidden'); 
-                
-                // Mapear, garantindo que 'visivel' seja booleano (true por padrão se ausente)
-                localAnimals = snapshot.docs.map(d => {
-                    const data = d.data();
-                    return { 
-                        id: d.id, 
-                        ...data, 
-                        visivel: data.visivel !== false // Trata null/undefined como true
-                    };
-                }); 
-                
-                localAnimals.sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-                if (isAdminView) { renderAdminTable(); } else { renderGallery(); }
-            }, (error) => { console.error("Erro listener:", error); openAlertModal("Erro ao carregar dados. Recarregue a página.", "Erro"); mainContainer.classList.add('view-hidden'); });
-        }
-        function handleLogoutState() { 
-            userId = null; animalsCollectionRef = null; 
-            if (unsubscribe) { unsubscribe(); unsubscribe = null; } 
-            localAnimals = []; // Limpa dados, pois falhou a auth
-            isAdminView = false; adminView.classList.add('view-hidden'); galleryView.classList.remove('view-hidden'); 
-            adminButton.innerHTML = '<i class="fas fa-pencil-alt"></i>'; adminButton.title = "Modo de Edição"; 
-            renderGallery(); adminTableBody.innerHTML = ''; 
-            mainContainer.classList.add('view-hidden'); 
-            openAlertModal("Autenticação necessária para usar esta aplicação."); 
-        }
-
-        // --- Listeners de Eventos Globais ---
-        
-        // Botão Admin agora abre o modal de login se não estiver em adminView
-        adminButton.addEventListener('click', () => {
-            if (isAdminView) {
-                // Se já estiver no modo Admin, volta para a galeria
-                toggleView();
-            } else if (isAdminLoggedIn) {
-                // Se o usuário já logou na sessão, permite acesso direto sem senha.
-                toggleView();
-            } else {
-                // Se estiver na galeria e não logou, exige login.
-                openLoginModal();
+        // Listeners para fechar o modal
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
             }
         });
-        
-        // Listeners do Modal de Login
-        loginButton.addEventListener('click', handleAdminLogin);
-        loginCancelButton.addEventListener('click', closeLoginModal);
-        loginPasswordInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleAdminLogin();
+
+        // --- Listeners para Navegação ---
+
+        // 1. Navegação por Teclado
+        document.addEventListener('keydown', (e) => {
+            // Só funciona se o modal estiver visível
+            if (modal.classList.contains('visible')) {
+                if (e.key === 'ArrowRight') {
+                    showNextAnimal();
+                } else if (e.key === 'ArrowLeft') {
+                    showPreviousAnimal();
+                }
             }
         });
-        
-        // Fecha o modal de login ao clicar fora dele
-        loginModal.addEventListener('click', (e) => { 
-            if (e.target === loginModal) closeLoginModal(); 
-        });
 
-        saveEventoButton.addEventListener('click', saveEventConfig); 
-        addAnimalButton.addEventListener('click', addNewAnimalRow);
-        saveAllButton.addEventListener('click', saveAllChanges);
-        deleteSelectedButton.addEventListener('click', deleteSelected); 
-        exportCsvButton.addEventListener('click', exportToCSV);
-        importCsvButton.addEventListener('click', importFromCSV); // Listener de importação
-        clearAllButton.addEventListener('click', () => {
-            openConfirmModal("Tem certeza que deseja limpar TODOS os dados? Esta ação não pode ser desfeita.", 'Confirmar Limpeza', clearAllData );
-        });
-        confirmCancelButton.addEventListener('click', closeConfirmModal);
-        confirmOkButton.addEventListener('click', () => { if (typeof confirmationCallback === 'function') { confirmationCallback(); } });
-        alertOkButton.addEventListener('click', closeAlertModal);
-        
-        // Listeners para navegação sticky
-        navFilhotesButton.addEventListener('click', () => scrollToSection('filhotes-section'));
-        navAdultosButton.addEventListener('click', () => scrollToSection('adultos-section'));
-
-        // Listener GERAL para auto-resize (delegação de evento)
-        adminTableBody.addEventListener('input', (event) => {
-            if (event.target.classList.contains('animal-historico')) {
-                autoResizeTextarea(event.target);
-            }
-        });
-        
-        // Listeners do Modal de Detalhes (inalterados)
-        closeModalBtn.addEventListener('click', closeModal); 
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); }); 
-        document.addEventListener('keydown', (e) => { 
-            if (modal.classList.contains('visible')) { 
-                if (e.key === 'ArrowRight') showNextAnimal(); 
-                else if (e.key === 'ArrowLeft') showPreviousAnimal(); 
-            } 
-        }); 
-        modal.addEventListener('touchstart', (e) => { 
-            touchStartX = e.changedTouches[0].screenX; 
-            touchStartY = e.changedTouches[0].screenY; 
-        }, { passive: true }); 
-        modal.addEventListener('touchend', (e) => { 
-            const touchEndX = e.changedTouches[0].screenX; 
-            const touchEndY = e.changedTouches[0].screenY; 
-            const deltaX = touchEndX - touchStartX; 
-            const deltaY = touchEndY - touchStartY; 
-            const swipeThreshold = 50; 
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) { 
-                if (deltaX > 0) showPreviousAnimal(); 
-                else showNextAnimal(); 
-            } 
+        // 2. Navegação por Swipe (Touch)
+        modal.addEventListener('touchstart', (e) => {
+            // Guarda a posição inicial do primeiro toque
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
 
-        // --- Inicialização ---
-        initializeAppWithAuth(); 
+        modal.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const swipeThreshold = 50; // Mínimo de 50px para contar como swipe
+
+            // Verifica se foi um swipe mais horizontal do que vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+                if (deltaX > 0) {
+                    // Arrastou para a Direita
+                    showPreviousAnimal();
+                } else {
+                    // Arrastou para a Esquerda
+                    showNextAnimal();
+                }
+            }
+        }, { passive: true });
 
     </script>
 </body>
