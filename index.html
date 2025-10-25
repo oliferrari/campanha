@@ -88,8 +88,7 @@
             <!-- Título com ícone de gênero via JS innerHTML -->
             <h2 id="modal-name" class="text-3xl font-bold text-brown-dark mb-2">Nome do Animal</h2>
             
-            <!-- Caixa de Mensagem Temporária para o CTA -->
-            <div id="adopt-message-box" class="hidden bg-green-100 text-green-700 p-3 rounded-lg text-sm mb-4"></div>
+            <!-- A caixa de mensagem e o botão de adoção foram removidos daqui -->
 
             <div class="space-y-3">
                 <div><strong class="text-gray-700">Idade:</strong> <span id="modal-age" class="text-gray-600"></span></div>
@@ -99,10 +98,8 @@
                 </div>
                 <div><strong class="text-gray-700">História:</strong> <p id="modal-history" class="text-gray-600"></p></div>
                 
-                <button id="adopt-button"
-                        class="w-full bg-red-accent text-white font-bold py-3 rounded-full mt-4 transition duration-200 hover:bg-red-accent/90 shadow-lg hover:shadow-xl">
-                    Quero Adotar!
-                </button>
+                <!-- O botão "Quero Adotar!" foi removido daqui -->
+
             </div>
         </div>
         
@@ -122,7 +119,7 @@
     <script>
         // --- Dados Locais (Data Source Único, com novos cães incluídos e links corrigidos) ---
         const animalsData = [ 
-            // Novos Cães (Adicionados com links diretos ou placeholders)
+            // Novos Cães 
             { nome: "Murilinho", idade: "4/5 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/E5NidS0.jpeg", visivel: true, sexo: "M" },
             { nome: "Luana", idade: "4 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/TiodOFO.jpeg", visivel: true, sexo: "F" },
             { nome: "Enrico", idade: "4 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/hY5B4hC.jpeg", visivel: true, sexo: "M" },
@@ -206,8 +203,7 @@
         const modalVacinado = document.getElementById('modal-vacinado');
         const modalCastrado = document.getElementById('modal-castrado');
         const modalHistory = document.getElementById('modal-history');
-        const adoptButton = document.getElementById('adopt-button');
-        const adoptMessageBox = document.getElementById('adopt-message-box');
+        // Removida referência a adoptButton e adoptMessageBox
         
         // Botões de navegação e sticky nav
         const prevBtn = document.getElementById('prev-animal');
@@ -303,9 +299,6 @@
             modalHistory.textContent = historyText;
             modalVacinado.checked = !!animal.vacinado; 
             modalCastrado.checked = !!animal.castrado; 
-            
-            // Esconde a mensagem temporária ao mudar o animal
-            adoptMessageBox.classList.add('hidden');
         }
 
         function openModal(index) { 
@@ -331,17 +324,8 @@
             if (prevIndex < 0) prevIndex = localAnimals.length - 1; 
             updateModalContent(prevIndex); 
         }
-
-        function handleAdoptClick() {
-            const message = `Parabéns pela decisão de adotar! Para prosseguir com a adoção de ${localAnimals[currentAnimalIndex].nome}, por favor, procure a equipe Indefesos no local do evento.`;
-            adoptMessageBox.textContent = message;
-            adoptMessageBox.classList.remove('hidden');
-            
-            // Esconde a mensagem após 5 segundos
-            setTimeout(() => {
-                adoptMessageBox.classList.add('hidden');
-            }, 5000);
-        }
+        
+        // Função handleAdoptClick removida
 
 
         // --- Funções de Renderização UI ---
@@ -441,8 +425,7 @@
             if (e.target === modal) closeModal(); 
         }); 
         
-        // CTA Button
-        adoptButton.addEventListener('click', handleAdoptClick);
+        // Removido listener de adoptButton
 
         // Listeners de Navegação (Teclado e Swipe)
         document.addEventListener('keydown', (e) => { 
