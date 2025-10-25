@@ -354,16 +354,15 @@
         // 2. Tenta carregar as credenciais do bloco de deploy externo (manual)
         // >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
         // SUBSTITUA ESTE OBJETO { ... } PELO SEU OBJETO firebaseConfig COMPLETO QUE VOCÊ COPIOU.
-        // Se você não quiser expor suas chaves aqui, use `const externalFirebaseConfig = null;`
         const externalFirebaseConfig = {
-              apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", 
-              authDomain: "campanha-d6eed8.firebaseapp.com",
-              projectId: "campanha-d6eed8",
-              storageBucket: "campanha-d6eed8.appspot.com",
-              messagingSenderId: "678872708483",
-              appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6",
-              measurementId: "G-WDVE5TJV5P"
-            };
+          apiKey: "AIzaSyDKwH61FFJQb-ZOSzHidxGx_Zt01HaYGto", 
+          authDomain: "campanha-d6eed8.firebaseapp.com",
+          projectId: "campanha-d6eed8",
+          storageBucket: "campanha-d6eed8.appspot.com",
+          messagingSenderId: "678872708483",
+          appId: "1:678872708483:web:ad6b1960b4ad767f7f932b6",
+          measurementId: "G-WDVE5TJV5P"
+        };
         
         // Prioriza as credenciais do Canvas (se existirem), senão usa as credenciais externas coladas.
         if (!configToUse && externalFirebaseConfig && externalFirebaseConfig.projectId) {
