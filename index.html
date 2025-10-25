@@ -283,7 +283,7 @@
         setLogLevel('error'); 
         
         let firebaseConfig = null;
-        let externalFirebaseConfig = null; // Declarado aqui (L1140)
+        let externalFirebaseConfig = null;
 
         // 1. Tenta carregar a configuração interna (Canvas)
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -297,7 +297,17 @@
         // 2. >>> INSERIR AQUI PARA DEPLOY EXTERNO <<<
         // SUBSTITUA "null" ABAIXO PELO SEU OBJETO firebaseConfig COMPLETO QUE VOCÊ COPIOU.
         // O OBJETO DEVE SER COLADO ENTRE AS CHAVES { }
-        // EX: const externalFirebaseConfig = { apiKey: "...", authDomain: "...", ... };
+        // EX: 
+        /*
+        externalFirebaseConfig = { 
+            apiKey: "SEU_API_KEY", 
+            authDomain: "SEU_DOMINIO.firebaseapp.com",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "...",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+        */
         externalFirebaseConfig = null; // <--- SUBSTITUA ESTE 'null' PELO SEU OBJETO FIREBASE (SE ESTIVER FORA DO CANVAS)
 
         // Se a config externa existe, usa ela
