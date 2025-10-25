@@ -10,175 +10,193 @@
     
     <!-- Fonte Inter do Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <style>
-        /* Define a fonte Inter como padrão */
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Cor de fundo principal: R=244 G=243 B=239 */
-            background-color: rgb(244, 243, 239);
-        }
-        /* Efeito de fade-in para o modal */
-        #modal {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        #modal.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        #modal.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        /* Cores customizadas usando as variáveis CSS para mais fácil manutenção */
-        :root {
-            --bg-light: rgb(244, 243, 239); /* R=244 G=243 B=239 */
-            --brown-medium: rgb(158, 117, 89); /* R=158 G=117 B=89 */
-            --brown-dark: rgb(102, 54, 40); /* R=102 G=54 B=40 */
-            --red-accent: rgb(233, 53, 54); /* R=233 G=53 B=54 */
-        }
+    
+    <!-- Ícones Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
+    <style>
+        /* Estilos Globais e Cores */
+        body { font-family: 'Inter', sans-serif; background-color: rgb(244, 243, 239); }
+        :root {
+            --bg-light: rgb(244, 243, 239); --brown-medium: rgb(158, 117, 89);
+            --brown-dark: rgb(102, 54, 40); --red-accent: rgb(233, 53, 54);
+        }
         .text-brown-dark { color: var(--brown-dark); }
         .text-brown-medium { color: var(--brown-medium); }
-        .bg-brown-medium-light { background-color: rgba(158, 117, 89, 0.2); } /* Um tone mais claro do marrom médio para placeholders */
-        .text-white-force { color: white !important; } /* Para texto sobre placeholders escuros */
         
-        /* Garante que o checkbox desabilitado tenha a cor da paleta */
-        input[type="checkbox"]:disabled {
-            opacity: 0.8;
-        }
+        /* Estilos Modal de Detalhes */
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal.hidden { opacity: 0; visibility: hidden; }
+        .modal.visible { opacity: 1; visibility: visible; }
+        
+        /* Estilos Checkbox Desabilitado */
+        input[type="checkbox"]:disabled { opacity: 0.8; cursor: not-allowed; } 
         input[type="checkbox"]:checked:disabled {
-            background-color: var(--brown-medium);
+            background-color: var(--brown-medium); border-color: var(--brown-medium);
+        }
+        
+        /* Estilo dos Botões de Navegação Flutuantes */
+        .btn-sticky-nav {
+            background-color: var(--brown-medium); 
+            color: var(--bg-light); 
+            @apply shadow-xl border border-brown-dark transition-transform duration-300;
+        }
+        .btn-sticky-nav:hover {
+            @apply scale-105 bg-brown-dark; 
         }
 
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
-
-    <div class="container mx-auto max-w-7xl">
-        
-        <!-- Cabeçalho com Logo, Título e Subtítulos -->
-        <header class="text-center mb-8">
-            <img src="https://static.wixstatic.com/media/1ff5c2_ac653801b5c844c09ce37b79a5a23ec1~mv2.png/v1/fill/w_86,h_83,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Indefesos.png" alt="Logo Indefesos" class="mx-auto mb-4 w-20 h-20 object-contain">
-            <h1 class="text-3xl md:text-5xl font-bold text-brown-dark">Campanha de Adoção</h1>
-            <p class="text-lg md:text-xl text-gray-600 mt-2">Clique em um animalzinho para conhecer sua história!</p>
-            
-            <!-- Informação discreta do evento -->
-            <p class="text-sm text-gray-500 mt-1">Edição Barra Shopping - 25/10/2025</p>
-        </header>
-
-        
-        <!-- Galeria principal onde os cards dos animais são inseridos via JS -->
-        <main id="animal-gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-            <!-- Cards dos animais serão populados aqui -->
-        </main>
-    </div>
-
     
-    <!-- Modal (Janela Flutuante) para detalhes do animal -->
-    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-8 relative animate-fade-in">
+    <!-- Container Principal -->
+    <div class="container mx-auto max-w-7xl relative">
+        
+        <!-- View da Galeria (única view mantida) -->
+        <div id="gallery-view">
+            <header class="text-center mb-8 pt-8"> 
+                <img src="https://static.wixstatic.com/media/1ff5c2_ac653801b5c844c09ce37b79a5a23ec1~mv2.png/v1/fill/w_86,h_83,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Indefesos.png" alt="" class="mx-auto mb-4 w-20 h-20 object-contain rounded-full shadow-lg p-1 bg-white">
+                <h1 class="text-3xl md:text-5xl font-bold text-brown-dark">Campanha de Adoção</h1>
+                <p class="text-lg md:text-xl text-gray-600 mt-2">Clique em um animalzinho para conhecer sua história!</p>
+                <p id="event-info" class="text-sm text-gray-500 mt-1">Edição Barra Shopping - 25/10/2025</p>
+            </header>
             
-            <!-- Botão de Fechar (X) -->
-            <button id="close-modal" class="absolute top-1 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-            
-            <!-- Conteúdo do Modal -->
-            <img id="modal-img" src="https://placehold.co/500x500/indigo/white?text=Adote!" alt="Foto do animal" class="w-full h-80 object-cover rounded-lg mb-4">
-            <h2 id="modal-name" class="text-3xl font-bold text-brown-dark mb-2">Nome do Animal</h2>
-            
-            <div class="space-y-3">
-                <div>
-                    <strong class="text-gray-700">Idade:</strong>
-                    <span id="modal-age" class="text-gray-600"></span>
-                </div>
-                
-                
-                <!-- Checkboxes de Status -->
-                <div class="flex items-center space-x-6">
-                    
-                    <div class="flex items-center">
-                        <input id="modal-vacinado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300">
-                        <label for="modal-vacinado" class="ml-2 text-gray-700">Vacinado</label>
-                    </div>
-                    
-                    <div class="flex items-center">
-                        <input id="modal-castrado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300">
-                        <label for="modal-castrado" class="ml-2 text-gray-700">Castrado</label>
-                    </div>
-                </div>
+            <main id="animal-gallery" class="flex flex-col gap-12">
+                <!-- Cards serão renderizados aqui -->
+            </main>
 
-                <div>
-                    <strong class="text-gray-700">História:</strong>
-                    <p id="modal-history" class="text-gray-600"></p>
-                </div>
+            <!-- Botões de Navegação Flutuantes -->
+            <div id="sticky-nav-buttons" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30 hidden">
+                <button id="nav-filhotes-button" class="btn-sticky-nav px-4 py-3 font-semibold rounded-full transition-all text-sm">
+                    <i class="fas fa-paw mr-2"></i> Filhotes
+                </button>
+                <button id="nav-adultos-button" class="btn-sticky-nav px-4 py-3 font-semibold rounded-full transition-all text-sm">
+                    <i class="fas fa-dog mr-2"></i> Adultos
+                </button>
             </div>
         </div>
+
+    </div> 
+    
+    <!-- Modal Detalhes Animal -->
+    <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div id="modal-content-wrapper" class="bg-white rounded-lg shadow-2xl w-full max-w-md p-8 relative">
+            <button id="close-modal" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+            
+            <img id="modal-img" src="https://placehold.co/500x500/indigo/white?text=Adote!" alt="Foto do animal" class="w-full h-80 object-cover rounded-lg mb-4">
+            
+            <!-- Título com ícone de gênero via JS innerHTML -->
+            <h2 id="modal-name" class="text-3xl font-bold text-brown-dark mb-2">Nome do Animal</h2>
+            
+            <!-- Caixa de Mensagem Temporária para o CTA -->
+            <div id="adopt-message-box" class="hidden bg-green-100 text-green-700 p-3 rounded-lg text-sm mb-4"></div>
+
+            <div class="space-y-3">
+                <div><strong class="text-gray-700">Idade:</strong> <span id="modal-age" class="text-gray-600"></span></div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center"><input id="modal-vacinado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300"><label for="modal-vacinado" class="ml-2 text-gray-700">Vacinado</label></div>
+                    <div class="flex items-center"><input id="modal-castrado" type="checkbox" disabled class="h-5 w-5 rounded text-brown-medium focus:ring-brown-medium border-gray-300"><label for="modal-castrado" class="ml-2 text-gray-700">Castrado</label></div>
+                </div>
+                <div><strong class="text-gray-700">História:</strong> <p id="modal-history" class="text-gray-600"></p></div>
+                
+                <button id="adopt-button"
+                        class="w-full bg-red-accent text-white font-bold py-3 rounded-full mt-4 transition duration-200 hover:bg-red-accent/90 shadow-lg hover:shadow-xl">
+                    Quero Adotar!
+                </button>
+            </div>
+        </div>
+        
+        <!-- Botões de Navegação no Modal (Visível apenas em dispositivos maiores que mobile) -->
+        <button id="prev-animal" 
+                class="absolute left-2 sm:left-4 z-50 text-white text-3xl md:text-4xl p-2 md:p-4 rounded-full bg-black bg-opacity-30 hover:bg-opacity-70 transition duration-150 transform -translate-y-1/2 top-1/2 shadow-lg hidden md:block">
+            &larr;
+        </button>
+        <button id="next-animal" 
+                class="absolute right-2 sm:right-4 z-50 text-white text-3xl md:text-4xl p-2 md:p-4 rounded-full bg-black bg-opacity-30 hover:bg-opacity-70 transition duration-150 transform -translate-y-1/2 top-1/2 shadow-lg hidden md:block">
+            &rarr;
+        </button>
+
     </div>
 
+
     <script>
-        // Dados dos animais (com status booleano e links de imagem) - ATUALIZADO
-        const animals = [
-            { nome: "Alice", idade: "2 anos", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png" },
-            { nome: "Alfredo", idade: "2 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png" },
-            { nome: "Amarelo", idade: "6 anos", historico: "Resgatado amarrado em um poste, com uma facada no rosto. Está há anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/t5gv8Z8.png" },
-            { nome: "Amora", idade: "5 anos", historico: "Vitima de maus tratos, resgatada na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1gOucov.png" },
-            { nome: "Angelo", idade: "4 anos", historico: "Resgatado da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/VQ8JWHF.png" },
-            { nome: "Ariel", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentro de um galinheiro.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/udjUsIK.png" },
-            { nome: "Athos", idade: "2 anos", historico: "Athos resgatado junto com a Kiara amarrado em um portão de uma casa em seropedica 11/06", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ygKFF2W.png" },
-            { nome: "Batman", idade: "5 meses", historico: "Resgatado muito filhote com seus irmãos, em São Gonçalo. Único filhote restante da ninhada.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/jUTi9tw.png" },
-            { nome: "Beethoven", idade: "6 anos", historico: "Resgatado em Santa Cruz com diversos tumores.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/yn5liYO.png" },
-            { nome: "Benji", idade: "1 ano", historico: "Resgatado da Fazenda Modelo, apreendido vitimas de maus tratos pelo Nas Garras da Lei.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lD6xOKX.png" },
-            { nome: "Beth", idade: "4 anos", historico: "Resgatada vitima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/cjiYcTv.png" },
-            { nome: "Betinho", idade: "11 meses", historico: "Vitima de maus tratos, resgatado pelo Nas garras da Lei. Vivia em cativeiro, não via a luz do dia.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/uK7Z81s.png" },
-            { nome: "Billy", idade: "3 anos", historico: "Resgatado na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gMXjwOy.png" },
-            { nome: "Britney", idade: "2 anos", historico: "Resgatada nas ruas de Queimados em agosto/25", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MaL0EJF.png" },
-            { nome: "Caetano", idade: "3 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l3udRvm.png" },
-            { nome: "Canela", idade: "1 ano", historico: "Resgatada em Caxias,quase sendo atropelada", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/CPWqiOF.png" },
-            { nome: "Cristal (Grande)", idade: "4/5 anos", historico: "Resgatada em um cubículo na comunidade dos Tabajaras, em Copacabana, Única que ainda não foi adotada.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PQXe98c.png" },
-            { nome: "Cristal", idade: "4 anos", historico: "Resgatada da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/7sRxpig.png" },
-            { nome: "Darth", idade: "6 anos", historico: "Resgatado filhote em Santo Cristo. Adotado e devolvido 2 anos depois.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/dQdmIlB.png" },
-            { nome: "Digo", idade: "5/6 anos", historico: "Resgatado das ruas,aonde viveu por 5 anos, em Duque de Caxias, era um cão comunitário, até que adoeceu. Resgatado com plaqueta baixa,grave.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Y6AEG4M.png" },
-            { nome: "Docinho/dentinha", idade: "3 anos", historico: "Resgatada abandonada em Sta Cruz", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/sng21o3.png" },
-            { nome: "Dominó", idade: "3 anos", historico: "Resgatado no Jacaré com seus 10 irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/4qtub21.png" },
-            { nome: "Elsa", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentrol de um galinheiro, com a Ariel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PdP1fYz.png" },
-            { nome: "Elvis", idade: "2 anos", historico: "Resgatada após morte da sua tutora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oeH7R52.png" },
-            { nome: "Feijão", idade: "4 anos", historico: "Resgatado na Fazenda Modelo 10/2024", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oi6dQm4.png" },
-            { nome: "Feliz", idade: "3 anos", historico: "Resgatado muito filhote com sua mãe e seus irmãos. Está há muito tempo no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Hj5qOIR.png" },
-            { nome: "Fênix", idade: "6/7 anos", historico: "Resgatado baleado após uma operação na cidade de Deus", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/rmbtu0g.png" },
-            { nome: "Isadora", idade: "2 anos", historico: "Resgatada em Seropédica, vivia nas ruas.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MAsffdQ.png" },
-            { nome: "Juca", idade: "11 meses", historico: "resgatado filhote com mãe e irmãos em Belfort roxo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l8jntRH.png" },
-            { nome: "Lara", idade: "2/3 anos", historico: "Resgatada por maus tratos no terraço de uma casa com sua filhote sem agua e comida por dias", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/i9HRWU7.png" },
-            { nome: "Leona", idade: "3 anos", historico: "Resgatada em Belfort Roxo, na beira da estrada, com seus filhotes. Mãe do Juca.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/nbFVcqt.png" },
-            { nome: "Lily", idade: "5 anos", historico: "Resgatada grávida em ilha de Guaratiba, em Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/pMxCTBC.png" },
-            { nome: "Liz", idade: "3 anos", historico: "Resgatada em Paciência atropelada. Recuperou os movimentos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Sa4Z85g.png" },
-            { nome: "Maisena", idade: "4 anos", historico: "Resgatado no mercado de Guaratiba final de 2023.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/DXBAPKk.png" },
-            { nome: "Manu", idade: "3 anos", historico: "Resgatada com seus filhotes Leticia, Cecilia e Pirata, nas ruas. Seus filhotes foram adotados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/I0VXyr9.png" },
-            { nome: "Marcelo", idade: "2 anos", historico: "Resgatado atropelado em Ilha de Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ff6Wi1x.png" },
-            { nome: "Marvilla", idade: "3 anos", historico: "Resgatada em Ilha de Guaratiba com seu filhote Vitinho. Estava no cio com machos a perseguindo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/8g7Gfbp.png" },
-            { nome: "Maya", idade: "4 anos", historico: "Resgatada vítima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/TmlobAz.png" },
-            { nome: "Nina", idade: "6 anos", historico: "Resgatada na PUC/RJ. Ficou dias vagando pela faculdade. Está há muitos anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/SVtyvIA.png" },
-            { nome: "Pablo", idade: "2 anos", historico: "Resgatado em Seropédica atropelado", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gGJu6oa.png" },
-            { nome: "Paper", idade: "1 ano e meio", historico: "Resgatado no Cachambi na comunidade Fernão Cardim.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/UTDSBCM.png" },
-            { nome: "Patrick", idade: "3 anos", historico: "Resgatado no antigo Cassino Bangu", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/6lSqGhR.png" },
-            { nome: "Pedro", idade: "4 anos", historico: "Resgatado da fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/9VgKnE5.png" },
-            { nome: "Peter", idade: "3 anos", historico: "Resgatado na Pavuna após a morte do seu tutor,com a pata traseira decepda e cheia de bichos. Amputoui a pata mas leva uma vida normal.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/JmOy7yv.png" },
-            { nome: "Pimpão", idade: "6 anos", historico: "Resgatado com outros 9 cães no Jacaré", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/NrQwzu6.png" },
-            { nome: "Pirata", idade: "2/3 anos", historico: "Resgatado com sua mãe e seus irmãos no metrô de Maria da Graça. Único que ainda não foi adotado.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/AJ8Af8v.png" },
-            { nome: "Princesa", idade: "5 anos", historico: "Resgatada de maus tratos, machucada, pele e osso.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Xb0WR8g.png" },
-            { nome: "Ramona", idade: "5 anos", historico: "Mãe do Feliz, resgatada com seus filhotes recém nascidos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/txUppNv.png" },
-            { nome: "Ravena", idade: "2 anos", historico: "histórico desconhecido", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/X3ghXQT.png" },
-            { nome: "Roberta", idade: "3 anos", historico: "Resgatada em Seropédica junto com Isadora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/n1DKHkS.png" },
-            { nome: "Scott", idade: "5 anos", historico: "abandonado pelas ruas de Maricá , resgatado pela ong Hope que nos pediu ajuda", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Q746sQ1.png" },
-            { nome: "Sonho", idade: "5 anos", historico: "Resgatado muito machucado no Uptown.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/kiCzetx.png" },
-            { nome: "Teodora", idade: "5 anos", historico: "Resgatada em Deodoro, no cio, com muitos cachorros em cima dela e ela fugindo deles e chorando.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lYoa67V.png" },
-            { nome: "Tigrinho", idade: "1 ano", historico: "Resgatado em hospedagem desconhecida em 11/24 com suas mães e irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/niEPyqz.png" },
-            { nome: "Tita", idade: "6/7 anos", historico: "Vitima de maus tratos, resgatada pela Prefeitura, foi tirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1JiJ72j.png" },
-            { nome: "Vitinho", idade: "5/6 meses", historico: "filho da Marvilla, resgatado em Illha de Guaratiba.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/YFhHa33.png" },
-            { nome: "Whitney", idade: "6 meses", historico: "Abandonada em 12/06 na rua do abrigo dos indefesos debaixo de temporal com os irmãos Elton e Hazel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/tMJrZfR.png" },
-            { nome: "Xanadu", idade: "6 anos", historico: "Resgatada nas paineiras com outros 2 cães", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Lhd95IL.png" }
+        // --- Dados Locais (Data Source Único, com novos cães incluídos e links corrigidos) ---
+        const animalsData = [ 
+            // Novos Cães (Adicionados com links diretos ou placeholders)
+            { nome: "Murilinho", idade: "4/5 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/E5NidS0.jpeg", visivel: true, sexo: "M" },
+            { nome: "Luana", idade: "4 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/TiodOFO.jpeg", visivel: true, sexo: "F" },
+            { nome: "Enrico", idade: "4 meses", historico: "Vacinado 2 doses, raiva e chipado", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/hY5B4hC.jpeg", visivel: true, sexo: "M" },
+            { nome: "Leopoldo", idade: "5 anos", historico: "Chegou em 05/2024 das enchentes do sul veio de São Leopoldo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Lx5n2In.jpeg", visivel: true, sexo: "M" },
+            { nome: "Sebastião", idade: "4 anos", historico: "Nenhum histórico disponível.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/57oy9C2.jpeg", visivel: true, sexo: "M" },
+
+            // Cães Originais (Removido Batman e Canela)
+            { nome: "Alfredo", idade: "2 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/XJvSD4b.png", visivel: true, sexo: "M" },
+            { nome: "Alice", idade: "2 anos", historico: "Resgatada em Ilha de Guaratiba, após engravidar e ter seus filhotes doados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l1Wy1Bx.png", visivel: true, sexo: "F" },
+            { nome: "Amarelo", idade: "6 anos", historico: "Resgatado amarrado em um poste, com uma facada no rosto. Está há anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/t5gv8Z8.png", visivel: true, sexo: "M" },
+            { nome: "Amora", idade: "5 anos", historico: "Vitima de maus tratos, resgatada na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1gOucov.png", visivel: true, sexo: "F" },
+            { nome: "Angelo", idade: "4 anos", historico: "Resgatado da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/VQ8JWHF.png", visivel: true, sexo: "M" },
+            { nome: "Ariel", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentro de um galinheiro.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/udjUsIK.png", visivel: true, sexo: "F" },
+            { nome: "Athos", idade: "2 anos", historico: "Athos resgatado junto com a Kiara amarrado em um portão de uma casa em seropedica 11/06", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ygKFF2W.png", visivel: true, sexo: "M" },
+            { nome: "Beethoven", idade: "6 anos", historico: "Resgatado em Santa Cruz com diversos tumores.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/yn5liYO.png", visivel: true, sexo: "M" },
+            { nome: "Benji", idade: "1 ano", historico: "Resgatado da Fazenda Modelo, apreendido vitimas de maus tratos pelo Nas Garras da Lei.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lD6xOKX.png", visivel: true, sexo: "M" },
+            { nome: "Beth", idade: "4 anos", historico: "Resgatada vitima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/cjiYcTv.png", visivel: true, sexo: "F" },
+            { nome: "Betinho", idade: "11 meses", historico: "Vitima de maus tratos, resgatado pelo Nas garras da Lei. Vivia em cativeiro, não via a luz do dia.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/uK7Z81s.png", visivel: true, sexo: "M" },
+            { nome: "Billy", idade: "3 anos", historico: "Resgatado na Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gMXjwOy.png", visivel: true, sexo: "M" },
+            { nome: "Britney", idade: "2 anos", historico: "Resgatada nas ruas de Queimados em agosto/25", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MaL0EJF.png", visivel: true, sexo: "F" },
+            { nome: "Caetano", idade: "3 anos", historico: "Resgatado com 9 irmãos em Nova Iguaçu. A dona colocou eles para fora de casa e dizia que iria jogar no rio", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l3udRvm.png", visivel: true, sexo: "M" },
+            { nome: "Cristal (Grande)", idade: "4/5 anos", historico: "Resgatada em um cubículo na comunidade dos Tabajaras, em Copacabana, Única que ainda não foi adotada.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PQXe98c.png", visivel: true, sexo: "F" },
+            { nome: "Cristal", idade: "4 anos", historico: "Resgatada da Fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/7sRxpig.png", visivel: true, sexo: "F" },
+            { nome: "Darth", idade: "6 anos", historico: "Resgatado filhote em Santo Cristo. Adotado e devolvido 2 anos depois.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/dQdmIlB.png", visivel: true, sexo: "M" },
+            { nome: "Digo", idade: "5/6 anos", historico: "Resgatado das ruas,aonde viveu por 5 anos, em Duque de Caxias, era um cão comunitário, até que adoeceu. Resgatado com plaqueta baixa,grave.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Y6AEG4M.png", visivel: true, sexo: "M" },
+            { nome: "Docinho/dentinha", idade: "3 anos", historico: "Resgatada abandonada em Sta Cruz", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/sng21o3.png", visivel: true, sexo: "F" },
+            { nome: "Dominó", idade: "3 anos", historico: "Resgatado no Jacaré com seus 10 irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/4qtub21.png", visivel: true, sexo: "M" },
+            { nome: "Elsa", idade: "2 anos", historico: "Resgatada em Santa Cruz, vivia dentrol de um galinheiro, com a Ariel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/PdP1fYz.png", visivel: true, sexo: "F" },
+            { nome: "Elvis", idade: "2 anos", historico: "Resgatada após morte da sua tutora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oeH7R52.png", visivel: true, sexo: "M" },
+            { nome: "Feijão", idade: "4 anos", historico: "Resgatado na Fazenda Modelo 10/2024", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/oi6dQm4.png", visivel: true, sexo: "M" },
+            { nome: "Feliz", idade: "3 anos", historico: "Resgatado muito filhote com sua mãe e seus irmãos. Está há muito tempo no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Hj5qOIR.png", visivel: true, sexo: "M" },
+            { nome: "Fênix", idade: "6/7 anos", historico: "Resgatado baleado após uma operação na cidade de Deus", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/rmbtu0g.png", visivel: true, sexo: "M" },
+            { nome: "Isadora", idade: "2 anos", historico: "Resgatada em Seropédica, vivia nas ruas.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/MAsffdQ.png", visivel: true, sexo: "F" },
+            { nome: "Juca", idade: "11 meses", historico: "resgatado filhote com mãe e irmãos em Belfort roxo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/l8jntRH.png", visivel: true, sexo: "M" },
+            { nome: "Lara", idade: "2/3 anos", historico: "Resgatada por maus tratos no terraço de uma casa com sua filhote sem agua e comida por dias", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/i9HRWU7.png", visivel: true, sexo: "F" },
+            { nome: "Leona", idade: "3 anos", historico: "Resgatada em Belfort Roxo, na beira da estrada, com seus filhotes. Mãe do Juca.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/nbFVcqt.png", visivel: true, sexo: "F" },
+            { nome: "Lily", idade: "5 anos", historico: "Resgatada grávida em ilha de Guaratiba, em Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/pMxCTBC.png", visivel: true, sexo: "F" },
+            { nome: "Liz", idade: "3 anos", historico: "Resgatada em Paciência atropelada. Recuperou os movimentos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Sa4Z85g.png", visivel: true, sexo: "F" },
+            { nome: "Maisena", idade: "4 anos", historico: "Resgatado no mercado de Guaratiba final de 2023.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/DXBAPKk.png", visivel: true, sexo: "M" },
+            { nome: "Manu", idade: "3 anos", historico: "Resgatada com seus filhotes Leticia, Cecilia e Pirata, nas ruas. Seus filhotes foram adotados.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/I0VXyr9.png", visivel: true, sexo: "F" },
+            { nome: "Marcelo", idade: "2 anos", historico: "Resgatado atropelado em Ilha de Guaratiba.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/ff6Wi1x.png", visivel: true, sexo: "M" },
+            { nome: "Marvilla", idade: "3 anos", historico: "Resgatada em Ilha de Guaratiba com seu filhote Vitinho. Estava no cio com machos a perseguindo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/8g7Gfbp.png", visivel: true, sexo: "F" },
+            { nome: "Maya", idade: "4 anos", historico: "Resgatada vítima de maus tratos pela prefeitura. Foi retirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/TmlobAz.png", visivel: true, sexo: "F" },
+            { nome: "Nina", idade: "6 anos", historico: "Resgatada na PUC/RJ. Ficou dias vagando pela faculdade. Está há muitos anos no abrigo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/SVtyvIA.png", visivel: true, sexo: "F" },
+            { nome: "Pablo", idade: "2 anos", historico: "Resgatado em Seropédica atropelado", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/gGJu6oa.png", visivel: true, sexo: "M" },
+            { nome: "Paper", idade: "1 ano e meio", historico: "Resgatado no Cachambi na comunidade Fernão Cardim.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/UTDSBCM.png", visivel: true, sexo: "M" },
+            { nome: "Patrick", idade: "3 anos", historico: "Resgatado no antigo Cassino Bangu", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/6lSqGhR.png", visivel: true, sexo: "M" },
+            { nome: "Pedro", idade: "4 anos", historico: "Resgatado da fazenda Modelo", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/9VgKnE5.png", visivel: true, sexo: "M" },
+            { nome: "Peter", idade: "3 anos", historico: "Resgatado na Pavuna após a morte do seu tutor,com a pata traseira decepda e cheia de bichos. Amputoui a pata mas leva uma vida normal.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/JmOy7yv.png", visivel: true, sexo: "M" },
+            { nome: "Pimpão", idade: "6 anos", historico: "Resgatado com outros 9 cães no Jacaré", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/NrQwzu6.png", visivel: true, sexo: "M" },
+            { nome: "Pirata", idade: "2/3 anos", historico: "Resgatado com sua mãe e seus irmãos no metrô de Maria da Graça. Único que ainda não foi adotado.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/AJ8Af8v.png", visivel: true, sexo: "M" },
+            { nome: "Princesa", idade: "5 anos", historico: "Resgatada de maus tratos, machucada, pele e osso.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Xb0WR8g.png", visivel: true, sexo: "F" },
+            { nome: "Ramona", idade: "5 anos", historico: "Mãe do Feliz, resgatada com seus filhotes recém nascidos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/txUppNv.png", visivel: true, sexo: "F" },
+            { nome: "Ravena", idade: "2 anos", historico: "histórico desconhecido", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/X3ghXQT.png", visivel: true, sexo: "F" },
+            { nome: "Roberta", idade: "3 anos", historico: "Resgatada em Seropédica junto com Isadora.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/n1DKHkS.png", visivel: true, sexo: "F" },
+            { nome: "Scott", idade: "5 anos", historico: "abandonado pelas ruas de Maricá , resgatado pela ong Hope que nos pediu ajuda", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Q746sQ1.png", visivel: true, sexo: "M" },
+            { nome: "Sonho", idade: "5 anos", historico: "Resgatado muito machucado no Uptown.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/kiCzetx.png", visivel: true, sexo: "M" },
+            { nome: "Teodora", idade: "5 anos", historico: "Resgatada em Deodoro, no cio, com muitos cachorros em cima dela e ela fugindo deles e chorando.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/lYoa67V.png", visivel: true, sexo: "F" },
+            { nome: "Tigrinho", idade: "1 ano", historico: "Resgatado em hospedagem desconhecida em 11/24 com suas mães e irmãos.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/niEPyqz.png", visivel: true, sexo: "M" },
+            { nome: "Tita", idade: "6/7 anos", historico: "Vitima de maus tratos, resgatada pela Prefeitura, foi tirada da Fazenda Modelo.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/1JiJ72j.png", visivel: true, sexo: "F" },
+            { nome: "Vitinho", idade: "5/6 meses", historico: "filho da Marvilla, resgatado em Illha de Guaratiba.", vacinado: true, castrado: false, imageUrl: "https://i.imgur.com/YFhHa33.png", visivel: true, sexo: "M" },
+            { nome: "Whitney", idade: "6 meses", historico: "Abandonada em 12/06 na rua do abrigo dos indefesos debaixo de temporal com os irmãos Elton e Hazel.", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/tMJrZfR.png", visivel: true, sexo: "F" },
+            { nome: "Xanadu", idade: "6 anos", historico: "Resgatada nas paineiras com outros 2 cães", vacinado: true, castrado: true, imageUrl: "https://i.imgur.com/Lhd95IL.png", visivel: true, sexo: "F" }
         ];
 
+        // Adiciona um ID temporário para uso interno do script
+        const localAnimals = animalsData.map((d, index) => ({...d, id: `animal-${index}`}));
 
-        // Elementos do DOM
+        // --- Variáveis de Estado e Navegação ---
+        let currentAnimalIndex = -1;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // --- Elementos do DOM ---
         const gallery = document.getElementById('animal-gallery');
         const modal = document.getElementById('modal');
         const closeModalBtn = document.getElementById('close-modal');
@@ -188,154 +206,280 @@
         const modalVacinado = document.getElementById('modal-vacinado');
         const modalCastrado = document.getElementById('modal-castrado');
         const modalHistory = document.getElementById('modal-history');
+        const adoptButton = document.getElementById('adopt-button');
+        const adoptMessageBox = document.getElementById('adopt-message-box');
+        
+        // Botões de navegação e sticky nav
+        const prevBtn = document.getElementById('prev-animal');
+        const nextBtn = document.getElementById('next-animal');
+        const navFilhotesButton = document.getElementById('nav-filhotes-button');
+        const navAdultosButton = document.getElementById('nav-adultos-button');
+        const stickyNavButtons = document.getElementById('sticky-nav-buttons');
 
-        // --- Variáveis para Navegação ---
-        let currentAnimalIndex = -1;
-        let touchStartX = 0;
-        let touchStartY = 0;
-        // ---------------------------------
 
-        // Função para converter RGB para HEX (para URLs de placeholder)
-        function rgbToHex(r, g, b) {
-            return [r, g, b].map(x => {
-                const hex = x.toString(16);
-                return hex.length === 1 ? '0' + hex : hex;
-            }).join('');
+        // --- Funções Auxiliares de Estilo e Dados ---
+        function rgbToHex(r, g, b) { return [r, g, b].map(x => { const hex = x.toString(16); return hex.length === 1 ? '0' + hex : hex; }).join(''); }
+        const placeholderBgColor = rgbToHex(158, 117, 89);
+        const placeholderTextColor = rgbToHex(244, 243, 239);
+        
+        function getGenderIcon(sexo) {
+            const gender = (sexo || '').toUpperCase();
+            // Retorna o símbolo unicode de gênero
+            return gender === 'F' ? '♀' : (gender === 'M' ? '♂' : '');
         }
 
-        // Definindo as cores da paleta para os placeholders
-        const placeholderBgColor = rgbToHex(158, 117, 89); // Marrom médio
-        const placeholderTextColor = rgbToHex(244, 243, 239); // Branco acinzentado
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Helper function to convert age string to months (approximate)
+        const convertToMonths = (ageStr) => {
+            const ageLower = (ageStr || '').toLowerCase();
+            
+            // Case 1: Months (e.g., "5 meses", "4/5 meses")
+            const monthMatch = ageLower.match(/(\d+[\/]?\d*)\s*mes(es)?/);
+            if (monthMatch) {
+                const parts = monthMatch[1].split('/');
+                return parseFloat(parts[0]); // Considera a primeira parte (min/max)
+            }
 
-        // --- Funções de Navegação e Modal ---
-
-        // Função separada para ATUALIZAR o conteúdo do modal
-        function updateModalContent(index) {
-            if (index < 0 || index >= animals.length) {
-                console.error("Índice de animal inválido:", index);
-                return;
+            // Case 2: Years (e.g., "1 ano", "2/3 anos") - Convert to months
+            const yearMatch = ageLower.match(/(\d+[\/]?\d*)\s*an(?:o|os)?/);
+            if (yearMatch) {
+                const ageStr = yearMatch[1];
+                let years = parseFloat(ageStr);
+                if (ageStr.includes('/')) {
+                    const parts = ageStr.split('/');
+                    years = parseFloat(parts[0]); 
+                }
+                return years * 12;
             }
             
-            currentAnimalIndex = index; // Atualiza o índice global
-            const animal = animals[index];
+            // Handle "1 ano e meio" (18 months) - simplified check
+            if (ageLower.includes('1 ano') && ageLower.includes('meio')) {
+                 return 18;
+            }
+            
+            return NaN;
+        };
+
+        // Classificação: Filhotes (idade <= 7 meses) vs Adultos (> 7 meses)
+        const isFilhote = (animal) => {
+            const months = convertToMonths(animal.idade);
+            
+            if (!isNaN(months)) {
+                return months <= 7;
+            }
+            
+            return false;
+        };
+
+
+        // --- Funções do Modal de Detalhes ---
+
+        function updateModalContent(index) { 
+            if (index < 0 || index >= localAnimals.length) { console.error("Índice de animal inválido:", index); return; }
+            currentAnimalIndex = index; 
+            const animal = localAnimals[index]; 
 
             const placeholderUrlModal = `https://placehold.co/500x500/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
+            // Garante que o histórico 'null' seja tratado como "Nenhum histórico disponível."
+            const historyText = (animal.historico === "null" || !animal.historico) ? 'Nenhum histórico disponível.' : animal.historico;
+
             const finalImageUrlModal = animal.imageUrl ? animal.imageUrl : placeholderUrlModal;
             
-            modalImg.src = finalImageUrlModal;
-            modalImg.alt = `Foto de ${animal.nome}`;
-            modalName.textContent = animal.nome;
+            modalImg.src = finalImageUrlModal; 
+            modalImg.alt = `Foto de ${animal.nome}`; 
+            
+            // Renderiza nome e ícone de gênero
+            const genderIcon = getGenderIcon(animal.sexo);
+            const nameWithIcon = `${animal.nome || 'Nome do Animal'} <span class="text-brown-medium text-2xl">${genderIcon}</span>`;
+            modalName.innerHTML = nameWithIcon;
+
             modalAge.textContent = (animal.idade && animal.idade !== "N/A") ? animal.idade : 'Não informada';
-            modalHistory.textContent = (animal.historico && animal.historico !== "N/A") ? animal.historico : 'Nenhum histórico disponível.';
-            modalVacinado.checked = animal.vacinado;
-            modalCastrado.checked = animal.castrado;
-        }
-
-        // Chama a função de atualização e mostra o modal
-        function openModal(index) {
-            updateModalContent(index); // Atualiza o conteúdo para o índice clicado
-            modal.classList.remove('hidden');
-            modal.classList.add('visible');
-        }
-
-        // Reseta o índice ao fechar
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('visible');
-            currentAnimalIndex = -1; // Reseta o índice
-        }
-
-        // Função para mostrar o próximo animal
-        function showNextAnimal() {
-            let nextIndex = currentAnimalIndex + 1;
-            if (nextIndex >= animals.length) {
-                nextIndex = 0; // Volta ao início
-            }
-            updateModalContent(nextIndex);
-        }
-
-        // Função para mostrar o animal anterior
-        function showPreviousAnimal() {
-            let prevIndex = currentAnimalIndex - 1;
-            if (prevIndex < 0) {
-                prevIndex = animals.length - 1; // Vai para o fim
-            }
-            updateModalContent(prevIndex);
-        }
-
-
-
-        // --- Configuração Inicial e Event Listeners ---
-
-        // Popula a galeria (passando o índice)
-        animals.forEach((animal, index) => {
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105';
+            modalHistory.textContent = historyText;
+            modalVacinado.checked = !!animal.vacinado; 
+            modalCastrado.checked = !!animal.castrado; 
             
-            const placeholderUrlCard = `https://placehold.co/300x200/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome)}`;
-            const finalImageUrlCard = animal.imageUrl ? animal.imageUrl : placeholderUrlCard;
-            
-            card.innerHTML = `
-                <img src="${finalImageUrlCard}" alt="Foto de ${animal.nome}" class="w-full h-40 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-brown-medium text-center">${animal.nome}</h3>
-                </div>
-            `;
-            
-            // Passa o 'index' em vez do objeto 'animal'
-            card.addEventListener('click', () => openModal(index));
-            
-            gallery.appendChild(card);
-        });
+            // Esconde a mensagem temporária ao mudar o animal
+            adoptMessageBox.classList.add('hidden');
+        }
 
-        // Listeners para fechar o modal
-        closeModalBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
+        function openModal(index) { 
+            updateModalContent(index); 
+            modal.classList.remove('hidden'); 
+            modal.classList.add('visible'); 
+        }
+
+        function closeModal() { 
+            modal.classList.add('hidden'); 
+            modal.classList.remove('visible'); 
+            currentAnimalIndex = -1; 
+        }
+
+        function showNextAnimal() { 
+            let nextIndex = currentAnimalIndex + 1; 
+            if (nextIndex >= localAnimals.length) nextIndex = 0; 
+            updateModalContent(nextIndex); 
+        }
+
+        function showPreviousAnimal() { 
+            let prevIndex = currentAnimalIndex - 1; 
+            if (prevIndex < 0) prevIndex = localAnimals.length - 1; 
+            updateModalContent(prevIndex); 
+        }
+
+        function handleAdoptClick() {
+            const message = `Parabéns pela decisão de adotar! Para prosseguir com a adoção de ${localAnimals[currentAnimalIndex].nome}, por favor, procure a equipe Indefesos no local do evento.`;
+            adoptMessageBox.textContent = message;
+            adoptMessageBox.classList.remove('hidden');
+            
+            // Esconde a mensagem após 5 segundos
+            setTimeout(() => {
+                adoptMessageBox.classList.add('hidden');
+            }, 5000);
+        }
+
+
+        // --- Funções de Renderização UI ---
+
+        // Função auxiliar para criar o container de cards
+        function createAnimalCardContainer(animals) {
+            const container = document.createElement('div');
+            container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-4';
+            
+            animals.forEach((animal) => { 
+                // Garantimos que o índice original para o modal seja encontrado pelo ID
+                const originalIndex = localAnimals.findIndex(a => a.id === animal.id); 
+                if (originalIndex === -1) return; 
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 relative';
+                const placeholderUrlCard = `https://placehold.co/300x200/${placeholderBgColor}/${placeholderTextColor}?text=${encodeURIComponent(animal.nome || '...')}`; 
+                const finalImageUrlCard = animal.imageUrl ? animal.imageUrl : placeholderUrlCard;
+                
+                const genderIcon = getGenderIcon(animal.sexo);
+                const genderHtml = genderIcon ? `<div class="absolute top-2 right-2 text-white text-2xl font-bold p-1 rounded-full bg-black bg-opacity-30 leading-none">${genderIcon}</div>` : '';
+
+                card.innerHTML = `
+                    <img src="${finalImageUrlCard}" alt="Foto de ${animal.nome || 'Animal'}" class="w-full h-40 object-cover" onerror="this.src='${placeholderUrlCard}'"> 
+                    ${genderHtml}
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-brown-medium text-center">${animal.nome || 'Nome Indefinido'}</h3>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => openModal(originalIndex)); 
+                container.appendChild(card);
+            });
+            return container;
+        }
+
+
+        function renderGallery() { 
+            gallery.innerHTML = ''; 
+            
+            // Apenas considera animais com visivel != false (todos são true no conjunto estático)
+            const visibleAnimals = localAnimals.filter(animal => animal.visivel !== false);
+
+            const filhotes = visibleAnimals.filter(isFilhote);
+            const adultos = visibleAnimals.filter(animal => !isFilhote(animal));
+
+            // Ordena os dois grupos por nome
+            const sortedFilhotes = [...filhotes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+            const sortedAdultos = [...adultos].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+            
+            let hasFilhotes = sortedFilhotes.length > 0;
+            let hasAdultos = sortedAdultos.length > 0;
+
+            // Controla a visibilidade da navegação flutuante
+            if (hasFilhotes || hasAdultos) {
+                stickyNavButtons.classList.remove('hidden');
+            } else {
+                stickyNavButtons.classList.add('hidden');
             }
-        });
 
-        // --- Listeners para Navegação ---
+            navFilhotesButton.classList.toggle('hidden', !hasFilhotes);
+            navAdultosButton.classList.toggle('hidden', !hasAdultos);
 
-        // 1. Navegação por Teclado
-        document.addEventListener('keydown', (e) => {
-            // Só funciona se o modal estiver visível
-            if (modal.classList.contains('visible')) {
-                if (e.key === 'ArrowRight') {
-                    showNextAnimal();
-                } else if (e.key === 'ArrowLeft') {
-                    showPreviousAnimal();
-                }
+
+            // 1. Renderiza Filhotes
+            if (hasFilhotes) {
+                const filhotesTitle = document.createElement('h2');
+                filhotesTitle.id = 'filhotes-section'; 
+                filhotesTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
+                filhotesTitle.innerHTML = '<i class="fas fa-paw mr-3"></i> Filhotes';
+                gallery.appendChild(filhotesTitle);
+                gallery.appendChild(createAnimalCardContainer(sortedFilhotes));
             }
-        });
 
-        // 2. Navegação por Swipe (Touch)
-        modal.addEventListener('touchstart', (e) => {
-            // Guarda a posição inicial do primeiro toque
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
+            // 2. Renderiza Adultos
+            if (hasAdultos) {
+                const adultosTitle = document.createElement('h2');
+                adultosTitle.id = 'adultos-section'; 
+                adultosTitle.className = 'text-3xl font-bold text-brown-dark mt-10 mb-4 border-b border-brown-medium pb-2 text-center md:text-left';
+                adultosTitle.innerHTML = '<i class="fas fa-dog mr-3"></i> Adultos';
+                gallery.appendChild(adultosTitle);
+                gallery.appendChild(createAnimalCardContainer(sortedAdultos));
+            }
+
+            // 3. Mensagem se não houver animais
+            if (sortedFilhotes.length === 0 && sortedAdultos.length === 0) {
+                gallery.innerHTML = '<p class="text-center text-xl text-gray-500 mt-10">Nenhum animal visível para adoção no momento.</p>';
+            }
+        }
+
+
+        // --- Listeners de Eventos ---
+        
+        // Listeners do Modal de Detalhes
+        closeModalBtn.addEventListener('click', closeModal); 
+        modal.addEventListener('click', (e) => { 
+            if (e.target === modal) closeModal(); 
+        }); 
+        
+        // CTA Button
+        adoptButton.addEventListener('click', handleAdoptClick);
+
+        // Listeners de Navegação (Teclado e Swipe)
+        document.addEventListener('keydown', (e) => { 
+            if (modal.classList.contains('visible')) { 
+                if (e.key === 'ArrowRight') showNextAnimal(); 
+                else if (e.key === 'ArrowLeft') showPreviousAnimal(); 
+                else if (e.key === 'Escape') closeModal();
+            } 
+        }); 
+        
+        // Navegação por cliques (desktop)
+        prevBtn.addEventListener('click', showPreviousAnimal);
+        nextBtn.addEventListener('click', showNextAnimal);
+
+        modal.addEventListener('touchstart', (e) => { 
+            touchStartX = e.changedTouches[0].screenX; 
+            touchStartY = e.changedTouches[0].screenY; 
+        }, { passive: true }); 
+        
+        modal.addEventListener('touchend', (e) => { 
+            const touchEndX = e.changedTouches[0].screenX; 
+            const touchEndY = e.changedTouches[0].screenY; 
+            const deltaX = touchEndX - touchStartX; 
+            const deltaY = touchEndY - touchStartY; 
+            const swipeThreshold = 50; 
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) { 
+                if (deltaX > 0) showPreviousAnimal(); 
+                else showNextAnimal(); 
+            } 
         }, { passive: true });
+        
+        // Listeners para navegação sticky
+        navFilhotesButton.addEventListener('click', () => scrollToSection('filhotes-section'));
+        navAdultosButton.addEventListener('click', () => scrollToSection('adultos-section'));
 
-        modal.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].screenX;
-            const touchEndY = e.changedTouches[0].screenY;
-            
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-            const swipeThreshold = 50; // Mínimo de 50px para contar como swipe
-
-            // Verifica se foi um swipe mais horizontal do que vertical
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-                if (deltaX > 0) {
-                    // Arrastou para a Direita
-                    showPreviousAnimal();
-                } else {
-                    // Arrastou para a Esquerda
-                    showNextAnimal();
-                }
-            }
-        }, { passive: true });
+        // --- Inicialização ---
+        renderGallery(); 
 
     </script>
 </body>
